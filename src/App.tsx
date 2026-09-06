@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { District, Hotspot, SCIPResult, TelemetryEvent } from './types';
 import { fetchDistricts, fetchHotspots, simulateBudget } from './lib/api';
+import { IndiaDistrict } from './lib/allIndiaDistricts';
 
 import { Navigation } from './components/Navigation';
 import { OverviewDashboard } from './components/OverviewDashboard';
@@ -32,6 +33,7 @@ export const App: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [tickerVisible, setTickerVisible] = useState<boolean>(true);
   const [latestTelemetry, setLatestTelemetry] = useState<TelemetryEvent | null>(null);
+  const [searchedDistrict, setSearchedDistrict] = useState<IndiaDistrict | null>(null);
 
   // Load Initial Data
   useEffect(() => {
@@ -69,6 +71,15 @@ export const App: React.FC = () => {
     setLatestTelemetry(evt);
   };
 
+  const handleHeaderDistrictSelect = (district: IndiaDistrict) => {
+    setActiveTab('overview');
+    setSearchedDistrict(district);
+    const match = districts.find(d => d.district.toLowerCase() === district.district.toLowerCase());
+    if (match) {
+      setSelectedDistrict(match);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 flex flex-col font-sans selection:bg-emerald-600 selection:text-white pb-16">
       
@@ -84,6 +95,8 @@ export const App: React.FC = () => {
         openAuthModal={() => setIsAuthModalOpen(true)}
         tickerVisible={tickerVisible}
         setTickerVisible={setTickerVisible}
+        onSelectDistrictFromSearch={handleHeaderDistrictSelect}
+        setSelectedSector={setSelectedSector}
       />
 
       {/* Main Content Body */}
@@ -98,6 +111,7 @@ export const App: React.FC = () => {
             selectedSector={selectedSector}
             setSelectedSector={setSelectedSector}
             latestTelemetry={latestTelemetry}
+            externalTargetDistrict={searchedDistrict}
           />
         )}
 

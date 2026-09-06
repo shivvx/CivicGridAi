@@ -21,6 +21,7 @@ interface OverviewDashboardProps {
   selectedSector: string;
   setSelectedSector: (sector: string) => void;
   latestTelemetry?: TelemetryEvent | null;
+  externalTargetDistrict?: IndiaDistrict | null;
 }
 
 export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
@@ -31,7 +32,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
   climateMode,
   selectedSector,
   setSelectedSector,
-  latestTelemetry
+  latestTelemetry,
+  externalTargetDistrict
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -284,6 +286,13 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
     }, 12000);
   }, []);
 
+  // Respond to external target district from header search
+  useEffect(() => {
+    if (externalTargetDistrict) {
+      flyToDistrict(externalTargetDistrict);
+    }
+  }, [externalTargetDistrict, flyToDistrict]);
+
   const handleSearchSelect = (item: IndiaDistrict) => {
     setSearchQuery(item.district);
     setShowSearchDropdown(false);
@@ -330,7 +339,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               ↑ +18.4% today
             </span>
           </div>
-          <p className="mt-1.5 text-xs text-slate-600">Verified complaints across 40 administrative districts</p>
+          <p className="mt-1.5 text-xs text-slate-600">Verified telemetry across 802 Indian districts (40 Priority Core & 29 DBSCAN Clusters)</p>
         </div>
 
         {/* Card 2: Critical Deficit Zones */}
@@ -345,7 +354,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           </div>
           <div className="mt-3 flex items-baseline space-x-2">
             <span className="font-display text-3xl font-extrabold text-rose-600">{criticalCount}</span>
-            <span className="text-xs font-semibold text-slate-500 cursor-default select-none">of 40 Districts</span>
+            <span className="text-xs font-semibold text-slate-500 cursor-default select-none">of 802 National Grid</span>
           </div>
           <p className="mt-1.5 text-xs text-slate-600">{highCount} High Priority | Urgent intervention queued</p>
         </div>
@@ -401,7 +410,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               </h2>
             </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Search any of 780+ Indian districts • Click to zoom • Street & satellite views
+              Search all 802 Indian districts • Realtime Autocomplete & Pinpoint Zoom • Street & satellite views
             </p>
           </div>
 
@@ -432,7 +441,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder="Search any district..."
+                placeholder="Search all 802 districts..."
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);

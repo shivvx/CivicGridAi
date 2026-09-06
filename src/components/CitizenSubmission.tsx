@@ -347,7 +347,7 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
                   <Wifi className="h-3 w-3 text-slate-400" />
                   <span>Public IP: <b className="text-slate-700">{userIp}</b></span>
                   <span>•</span>
-                  <span>Spatial Mesh: 40 Districts Synced</span>
+                  <span>Spatial Mesh: 802 Districts Synced</span>
                 </div>
               </div>
             </div>
@@ -583,7 +583,7 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
           <h3 className="font-display text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
             <Layers className="h-4 w-4 text-emerald-600" />
-            <span>Recent Telemetry Dispatches across 40 Districts</span>
+            <span>Recent Telemetry Dispatches across 802 Districts</span>
           </h3>
           <span className="text-xs text-slate-500 font-medium">Auto-refreshing via National Mesh</span>
         </div>

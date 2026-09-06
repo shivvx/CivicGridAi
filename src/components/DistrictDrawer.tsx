@@ -87,7 +87,7 @@ export const DistrictDrawer: React.FC<DistrictDrawerProps> = ({ district, onClos
             <div>
               <div className="flex items-center space-x-2">
                 <span className="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
-                  RANK #{district.rank} OF 40
+                  PRIORITY RANK #{district.rank} (OF 802 NATIONAL GRID)
                 </span>
                 <span className={`text-[11px] font-bold uppercase px-2.5 py-0.5 rounded-full ${
                   district.urgency_class === 'Critical' 

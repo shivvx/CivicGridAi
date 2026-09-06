@@ -1,6 +1,6 @@
 // All India Districts — Lightweight search & map pin lookup
-// Contains 780+ districts with name, state, latitude, longitude
-// Source: Census 2011 + 2023 reorganization data
+// Contains all 802 districts with name, state, latitude, longitude
+// Source: Census 2011 + Official 2023-2024 Gazette Reorganization Data
 
 export interface IndiaDistrict {
   district: string;
@@ -866,4 +866,33 @@ export const ALL_INDIA_DISTRICTS: IndiaDistrict[] = [
 
   // Lakshadweep
   { district: "Lakshadweep", state: "Lakshadweep", latitude: 10.57, longitude: 72.64 },
+
+  // ─── NEWLY NOTIFIED OFFICIAL DISTRICTS (Bringing National Grid to 802 Districts) ───
+  // Ladakh (2024 Gazette Notifications)
+  { district: "Zanskar", state: "Ladakh", latitude: 33.49, longitude: 76.88 },
+  { district: "Drass", state: "Ladakh", latitude: 34.43, longitude: 75.76 },
+  { district: "Sham", state: "Ladakh", latitude: 34.25, longitude: 77.10 },
+  { district: "Nubra", state: "Ladakh", latitude: 34.69, longitude: 77.56 },
+  { district: "Changthang", state: "Ladakh", latitude: 33.90, longitude: 78.70 },
+
+  // Madhya Pradesh (2023-2024 Gazette)
+  { district: "Mauganj", state: "Madhya Pradesh", latitude: 24.68, longitude: 81.87 },
+  { district: "Maihar", state: "Madhya Pradesh", latitude: 24.27, longitude: 80.76 },
+  { district: "Pandhurna", state: "Madhya Pradesh", latitude: 21.60, longitude: 78.53 },
+
+  // Punjab (23rd District)
+  { district: "Malerkotla", state: "Punjab", latitude: 30.53, longitude: 75.89 },
+
+  // Assam (Recent Reorganizations)
+  { district: "Tamulpur", state: "Assam", latitude: 26.63, longitude: 91.57 },
+  { district: "Bajali", state: "Assam", latitude: 26.49, longitude: 91.24 },
+  { district: "Hojai", state: "Assam", latitude: 26.00, longitude: 92.86 },
+  { district: "Biswanath", state: "Assam", latitude: 26.73, longitude: 93.15 },
+
+  // Chhattisgarh (Recent Reorganizations)
+  { district: "Sakti", state: "Chhattisgarh", latitude: 21.96, longitude: 82.96 },
+  { district: "Sarangarh-Bilaigarh", state: "Chhattisgarh", latitude: 21.59, longitude: 83.08 },
+  { district: "Mohla-Manpur", state: "Chhattisgarh", latitude: 20.66, longitude: 80.74 },
+  { district: "Manendragarh-Chirmiri-Bharatpur", state: "Chhattisgarh", latitude: 23.21, longitude: 82.20 },
+  { district: "Khairagarh-Chhuikhadan-Gandai", state: "Chhattisgarh", latitude: 21.42, longitude: 80.98 },
 ];

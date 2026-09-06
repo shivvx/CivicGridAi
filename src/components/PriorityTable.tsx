@@ -128,7 +128,7 @@ export const PriorityTable: React.FC<PriorityTableProps> = ({
           </div>
 
           <div className="text-xs text-slate-500 font-medium">
-            Showing <b className="text-slate-900">{sorted.length}</b> of 40 Districts
+            Showing <b className="text-slate-900">{sorted.length}</b> Evaluated Deficit Districts (of 802 National Grid)
           </div>
         </div>
 
