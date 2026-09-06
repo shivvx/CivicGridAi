@@ -89,7 +89,7 @@ export const JudgeMode: React.FC<JudgeModeProps> = ({ isOpen, onClose, onNavigat
   const step = STEPS[currentStep];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fadeIn">
       <div className="bg-white border border-slate-200 shadow-2xl w-full max-w-3xl rounded-2xl p-6 sm:p-8 max-h-[90vh] flex flex-col justify-between text-slate-900">
         
         {/* Header */}

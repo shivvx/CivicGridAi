@@ -222,7 +222,7 @@ How may I assist your infrastructure capital planning? You may select one of the
 
       {/* Ground Truth JSON Modal */}
       {selectedContext && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs animate-fadeIn">
           <div className="gov-card w-full max-w-3xl rounded-2xl p-6 max-h-[80vh] flex flex-col shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center space-x-2">

@@ -72,7 +72,7 @@ export const DistrictDrawer: React.FC<DistrictDrawerProps> = ({ district, onClos
   const costCr = (proj.estimated_cost_inr / 10000000).toFixed(2);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 z-[9999] overflow-hidden">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"

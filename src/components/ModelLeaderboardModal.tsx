@@ -84,7 +84,7 @@ export const ModelLeaderboardModal: React.FC<ModelLeaderboardModalProps> = ({
   const clusterSummary = benchmarks?.benchmarks?.spatial_clustering?.summary || {};
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-6 bg-slate-900/50 backdrop-blur-sm animate-fadeIn">
       <div className="relative flex flex-col w-full max-w-6xl max-h-[92vh] bg-white border border-slate-200 rounded-2xl shadow-2xl text-slate-900 overflow-hidden">
         
         {/* Modal Header */}

@@ -57,7 +57,7 @@ export const VisionModal: React.FC<VisionModalProps> = ({ isOpen, onClose, onInj
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-fadeIn">
       <div className="bg-white border border-slate-200 shadow-2xl w-full max-w-4xl rounded-2xl p-6 max-h-[90vh] flex flex-col overflow-hidden text-slate-900">
         
         {/* Header */}
