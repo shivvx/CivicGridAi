@@ -21,7 +21,7 @@ export function exportOfficialDprPdf(district: District, project?: FundedProject
   doc.setFillColor(15, 23, 42); // slate-900
   doc.rect(0, 0, 210, 40, 'F');
 
-  doc.setTextColor(56, 189, 248); // cyan-400
+  doc.setTextColor(52, 211, 153); // emerald-400
   doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
   doc.text('GOVERNMENT OF INDIA — NATIONAL INFRASTRUCTURE PIPELINE', 15, 18);
@@ -63,7 +63,7 @@ export function exportOfficialDprPdf(district: District, project?: FundedProject
       ['Targeted Direct Beneficiaries', `${(proj.beneficiaries || proj.targeted_beneficiaries).toLocaleString()} Citizens`, '-', 'Maximized Reach']
     ],
     theme: 'grid',
-    headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' },
+    headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontStyle: 'bold' },
     styles: { fontSize: 8.5, cellPadding: 2.5 }
   });
 
@@ -96,7 +96,7 @@ export function exportOfficialDprPdf(district: District, project?: FundedProject
       ['Tranche 4 (Q4)', 'Commissioning, Third-Party Safety Audit & Sensor Handover', `₹${tranches.q4_commissioning_audit.toLocaleString()}`, '15%']
     ],
     theme: 'striped',
-    headStyles: { fillColor: [14, 116, 144], textColor: [255, 255, 255], fontStyle: 'bold' },
+    headStyles: { fillColor: [5, 150, 105], textColor: [255, 255, 255], fontStyle: 'bold' },
     styles: { fontSize: 8, cellPadding: 2.5 }
   });
 

@@ -89,25 +89,25 @@ export const JudgeMode: React.FC<JudgeModeProps> = ({ isOpen, onClose, onNavigat
   const step = STEPS[currentStep];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
-      <div className="glass-panel w-full max-w-3xl rounded-3xl p-6 sm:p-8 max-h-[90vh] flex flex-col justify-between border border-amber-500/30 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+      <div className="bg-white border border-slate-200 shadow-2xl w-full max-w-3xl rounded-2xl p-6 sm:p-8 max-h-[90vh] flex flex-col justify-between text-slate-900">
         
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 rounded-2xl bg-gradient-to-br from-amber-500 to-rose-600 text-white shadow-lg shadow-amber-500/20">
+            <div className="p-2.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 shadow-xs">
               <Award className="h-6 w-6" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="font-display text-lg font-bold text-white">
+                <h3 className="text-lg font-bold text-slate-900">
                   CivicGrid AI — Hackathon Evaluator & Judge Tour
                 </h3>
-                <span className="rounded-full bg-amber-950 px-2.5 py-0.5 text-[10px] font-bold text-amber-300 border border-amber-500/30">
+                <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">
                   Step {currentStep + 1} of 6
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Guided technical evaluation showing all 4 AI/ML tiers, SCIP knapsack optimization, and the 8 expansion features
               </p>
             </div>
@@ -115,7 +115,7 @@ export const JudgeMode: React.FC<JudgeModeProps> = ({ isOpen, onClose, onNavigat
 
           <button
             onClick={onClose}
-            className="rounded-xl p-2 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="rounded-xl p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
           >
             <X className="h-5 w-5" />
           </button>
@@ -125,30 +125,30 @@ export const JudgeMode: React.FC<JudgeModeProps> = ({ isOpen, onClose, onNavigat
         <div className="my-6 space-y-4">
           
           <div className="flex items-center justify-between">
-            <h4 className="font-display text-base font-extrabold text-cyan-400">
+            <h4 className="text-base font-bold text-slate-900">
               {step.title}
             </h4>
-            <span className="font-mono text-xs font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-1 rounded-full border border-emerald-500/30">
+            <span className="font-mono text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
               {step.rubricBadge}
             </span>
           </div>
 
           {/* Core Pitch */}
-          <div className="rounded-2xl bg-slate-950/90 p-4 border border-slate-800 space-y-3">
+          <div className="rounded-xl bg-slate-50 p-4 border border-slate-200 space-y-3">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 block mb-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">
                 Executive Demonstration Highlight
               </span>
-              <p className="text-xs text-slate-200 leading-relaxed">
+              <p className="text-xs text-slate-800 leading-relaxed font-normal">
                 {step.pitch}
               </p>
             </div>
 
-            <div className="pt-2 border-t border-slate-800/80">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block mb-1">
+            <div className="pt-2 border-t border-slate-200">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block mb-1">
                 Hardcore Technical Defense for Judges
               </span>
-              <p className="text-xs text-slate-300 leading-relaxed font-sans">
+              <p className="text-xs text-slate-600 leading-relaxed font-sans">
                 {step.judgeProof}
               </p>
             </div>
@@ -160,28 +160,28 @@ export const JudgeMode: React.FC<JudgeModeProps> = ({ isOpen, onClose, onNavigat
               onNavigateTab(step.targetTab);
               onClose();
             }}
-            className="w-full flex items-center justify-center space-x-2 rounded-xl bg-cyan-500/10 p-2.5 text-xs font-bold text-cyan-400 border border-cyan-500/30 hover:bg-cyan-500 hover:text-white transition-all"
+            className="w-full flex items-center justify-center space-x-2 rounded-xl bg-slate-900 hover:bg-slate-800 p-2.5 text-xs font-semibold text-white transition-all shadow-xs"
           >
             <span>Jump Directly to this Screen in Dashboard →</span>
           </button>
 
           {/* Battlecards Accordion */}
-          <div className="pt-2 border-t border-slate-800">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+          <div className="pt-2 border-t border-slate-200">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-2">
               Judge Q&A Battlecards (Instant Expert Answers):
             </span>
             <div className="space-y-1.5">
               {BATTLECARDS.map((bc, idx) => (
-                <div key={idx} className="rounded-xl bg-slate-900/70 border border-slate-800/80 overflow-hidden">
+                <div key={idx} className="rounded-xl bg-slate-50 border border-slate-200 overflow-hidden">
                   <button
                     onClick={() => setActiveBattlecard(activeBattlecard === idx ? null : idx)}
-                    className="w-full px-3 py-2 text-left text-xs font-semibold text-slate-300 hover:text-cyan-400 flex items-center justify-between"
+                    className="w-full px-3 py-2 text-left text-xs font-semibold text-slate-800 hover:text-emerald-700 flex items-center justify-between"
                   >
                     <span>{bc.q}</span>
-                    <ChevronRight className={`h-3.5 w-3.5 transition-transform ${activeBattlecard === idx ? 'rotate-90' : ''}`} />
+                    <ChevronRight className={`h-3.5 w-3.5 text-slate-400 transition-transform ${activeBattlecard === idx ? 'rotate-90' : ''}`} />
                   </button>
                   {activeBattlecard === idx && (
-                    <div className="px-3 pb-2.5 text-[11px] text-slate-400 leading-relaxed border-t border-slate-800 pt-1.5">
+                    <div className="px-3 py-2.5 text-[11px] text-slate-600 leading-relaxed border-t border-slate-200 bg-white">
                       {bc.a}
                     </div>
                   )}
@@ -193,11 +193,11 @@ export const JudgeMode: React.FC<JudgeModeProps> = ({ isOpen, onClose, onNavigat
         </div>
 
         {/* Navigation Controls */}
-        <div className="flex items-center justify-between border-t border-slate-800 pt-4">
+        <div className="flex items-center justify-between border-t border-slate-200 pt-4">
           <button
             onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
             disabled={currentStep === 0}
-            className="flex items-center space-x-1.5 rounded-xl px-4 py-2 text-xs font-bold text-slate-400 hover:text-white disabled:opacity-30"
+            className="flex items-center space-x-1.5 rounded-xl px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 disabled:opacity-30"
           >
             <ChevronLeft className="h-4 w-4" />
             <span>Previous Step</span>
@@ -210,7 +210,7 @@ export const JudgeMode: React.FC<JudgeModeProps> = ({ isOpen, onClose, onNavigat
                 key={idx}
                 onClick={() => setCurrentStep(idx)}
                 className={`h-2 rounded-full cursor-pointer transition-all ${
-                  currentStep === idx ? 'w-6 bg-cyan-400' : 'w-2 bg-slate-700'
+                  currentStep === idx ? 'w-6 bg-slate-900' : 'w-2 bg-slate-300'
                 }`}
               />
             ))}
@@ -224,7 +224,7 @@ export const JudgeMode: React.FC<JudgeModeProps> = ({ isOpen, onClose, onNavigat
                 onClose();
               }
             }}
-            className="flex items-center space-x-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-cyan-500/20 hover:scale-102 transition-all"
+            className="flex items-center space-x-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 px-4 py-2 text-xs font-semibold text-white shadow-xs transition-all"
           >
             <span>{currentStep === STEPS.length - 1 ? 'Finish Tour' : 'Next Step'}</span>
             <ChevronRight className="h-4 w-4" />
