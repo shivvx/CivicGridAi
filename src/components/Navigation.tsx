@@ -11,8 +11,11 @@ import {
   Award,
   Radio,
   Lock,
-  Cpu
+  Cpu,
+  UserCheck,
+  User
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 interface NavigationProps {
   activeTab: string;
@@ -22,6 +25,7 @@ interface NavigationProps {
   openVisionModal: () => void;
   openJudgeMode: () => void;
   openModelLeaderboard: () => void;
+  openAuthModal: () => void;
   tickerVisible: boolean;
   setTickerVisible: (visible: boolean) => void;
 }
@@ -34,9 +38,11 @@ export const Navigation: React.FC<NavigationProps> = ({
   openVisionModal,
   openJudgeMode,
   openModelLeaderboard,
+  openAuthModal,
   tickerVisible,
   setTickerVisible
 }) => {
+  const { user } = useAuth();
   const navItems = [
     { id: 'overview', label: 'GIS Command Center', icon: Activity },
     { id: 'citizen', label: 'Citizen Ingestion', icon: Mic },
@@ -140,6 +146,29 @@ export const Navigation: React.FC<NavigationProps> = ({
           >
             <Award className="h-3.5 w-3.5 text-amber-100" />
             <span>Judge Mode</span>
+          </button>
+
+          {/* User Auth & Role Switcher */}
+          <button
+            onClick={openAuthModal}
+            className="flex items-center space-x-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 px-2.5 py-1.5 border border-cyan-500/30 hover:border-cyan-400 transition-all text-xs shadow-sm"
+            title="Switch User Role or Sign In via Firebase"
+          >
+            <div className="h-6 w-6 rounded-full overflow-hidden border border-cyan-400 bg-slate-800 shrink-0 flex items-center justify-center">
+              {user?.photoURL ? (
+                <img src={user.photoURL} alt={user.displayName} className="h-full w-full object-cover" />
+              ) : (
+                <User className="h-3.5 w-3.5 text-cyan-300" />
+              )}
+            </div>
+            <div className="hidden sm:flex flex-col text-left">
+              <span className="font-bold text-white text-[11px] leading-tight truncate max-w-[95px]">
+                {user?.displayName ? user.displayName.split(' ')[0] : 'Sign In'}
+              </span>
+              <span className="text-[9px] text-cyan-300 font-mono leading-tight">
+                {user?.role === 'District Planning Officer' ? 'DM Bahraich' : user?.role === 'State Auditor' ? 'Auditor' : user?.role || 'Guest'}
+              </span>
+            </div>
           </button>
         </div>
       </div>

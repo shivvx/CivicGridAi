@@ -10,9 +10,12 @@ import {
   Smartphone, 
   Globe2,
   RefreshCw,
-  Layers
+  Layers,
+  Clock,
+  UserCheck
 } from 'lucide-react';
 import { submitCitizenGrievance, fetchRecentTelemetry } from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 import confetti from 'canvas-confetti';
 
 interface CitizenSubmissionProps {
@@ -20,13 +23,16 @@ interface CitizenSubmissionProps {
 }
 
 export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetrySubmitted }) => {
+  const { user } = useAuth();
   const [inputText, setInputText] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('Hindi');
   const [isRecording, setIsRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any | null>(null);
   const [recentList, setRecentList] = useState<any[]>([]);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
+  const timerIntervalRef = useRef<any>(null);
 
   // Web Speech Recognition reference
   const recognitionRef = useRef<any>(null);
@@ -93,33 +99,52 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
     if (isRecording) {
       recognitionRef.current?.stop();
       setIsRecording(false);
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
       return;
     }
 
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert('Web Speech API is not supported in this browser. Please use Chrome or click a preset.');
+      alert('Web Speech API is not supported in this browser. Please use Chrome, Edge, or Safari.');
       return;
     }
 
     const recognition = new SpeechRecognition();
-    recognition.continuous = false;
+    recognition.continuous = true;
     recognition.interimResults = true;
 
     if (selectedLanguage === 'Hindi') recognition.lang = 'hi-IN';
+    else if (selectedLanguage === 'Marathi') recognition.lang = 'mr-IN';
     else if (selectedLanguage === 'Bengali') recognition.lang = 'bn-IN';
     else if (selectedLanguage === 'Portuguese') recognition.lang = 'pt-BR';
-    else recognition.lang = 'en-US';
+    else recognition.lang = 'en-IN';
 
-    recognition.onstart = () => setIsRecording(true);
+    recognition.onstart = () => {
+      setIsRecording(true);
+      setRecordingSeconds(0);
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = setInterval(() => {
+        setRecordingSeconds(prev => prev + 1);
+      }, 1000);
+    };
+
     recognition.onresult = (event: any) => {
       const transcript = Array.from(event.results)
         .map((result: any) => result[0].transcript)
-        .join('');
+        .join(' ');
       setInputText(transcript);
     };
-    recognition.onerror = () => setIsRecording(false);
-    recognition.onend = () => setIsRecording(false);
+
+    recognition.onerror = (e: any) => {
+      console.warn('Speech recognition event:', e);
+      setIsRecording(false);
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+    };
 
     recognitionRef.current = recognition;
     recognition.start();
@@ -213,8 +238,9 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
                 className="rounded-lg bg-slate-900 px-2.5 py-1 text-xs text-slate-200 border border-slate-700 focus:outline-none"
               >
                 <option value="Hindi">Hindi (हिंदी)</option>
+                <option value="Marathi">Marathi (मराठी)</option>
                 <option value="Bengali">Bengali (বাংলা)</option>
-                <option value="English">English</option>
+                <option value="English">English (Indian Accent)</option>
                 <option value="Portuguese">Portuguese (Português)</option>
               </select>
             </div>
@@ -226,16 +252,29 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
               rows={5}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Speak or paste citizen grievance in any language (e.g. Hindi, Bengali, English)..."
+              placeholder="Speak via microphone or paste citizen grievance in any language (e.g. Hindi, Marathi, Bengali, English)..."
               className="w-full rounded-xl bg-slate-950/80 p-4 text-sm text-slate-100 placeholder-slate-500 border border-slate-800 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none font-sans"
             />
             {isRecording && (
-              <div className="absolute top-3 right-3 flex items-center space-x-2 bg-rose-950/80 px-2.5 py-1 rounded-full border border-rose-500/40 text-rose-300 text-xs animate-pulse">
-                <span className="h-2 w-2 rounded-full bg-rose-500"></span>
-                <span>Listening Live...</span>
+              <div className="absolute top-3 right-3 flex items-center space-x-2 bg-rose-950/90 px-3 py-1 rounded-full border border-rose-500/50 text-rose-300 text-xs shadow-md">
+                <span className="h-2.5 w-2.5 rounded-full bg-rose-500 animate-ping"></span>
+                <span className="font-semibold">
+                  Recording {selectedLanguage} ({String(Math.floor(recordingSeconds / 60)).padStart(2, '0')}:{String(recordingSeconds % 60).padStart(2, '0')})
+                </span>
               </div>
             )}
           </div>
+
+          {/* User Role Attribution */}
+          {user && (
+            <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
+              <div className="flex items-center space-x-1.5">
+                <UserCheck className="h-3.5 w-3.5 text-cyan-400" />
+                <span>Verified Stakeholder: <b className="text-white">{user.displayName}</b> ({user.role})</span>
+              </div>
+              <span className="text-[10px] text-slate-500 font-mono">Location: {user.district || 'Bahraich'}</span>
+            </div>
+          )}
 
           {/* Action Row */}
           <div className="flex items-center justify-between pt-2">
@@ -251,17 +290,18 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
                 }`}
               >
                 {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-                <span>{isRecording ? 'Stop Recording' : 'Live Voice Input'}</span>
+                <span>{isRecording ? 'Stop Speech Input' : 'Live Speech-to-Text'}</span>
               </button>
 
               {/* Animated Waveform when recording */}
               {isRecording && (
-                <div className="flex items-center space-x-1 h-8 px-2">
-                  <div className="w-1 bg-rose-500 rounded-full wave-bar" style={{ animationDelay: '0.1s' }} />
-                  <div className="w-1 bg-rose-400 rounded-full wave-bar" style={{ animationDelay: '0.2s' }} />
-                  <div className="w-1 bg-cyan-400 rounded-full wave-bar" style={{ animationDelay: '0.3s' }} />
-                  <div className="w-1 bg-rose-400 rounded-full wave-bar" style={{ animationDelay: '0.15s' }} />
-                  <div className="w-1 bg-cyan-500 rounded-full wave-bar" style={{ animationDelay: '0.25s' }} />
+                <div className="flex items-center space-x-1 h-8 px-2 bg-slate-950/60 rounded-lg border border-slate-800">
+                  <div className="w-1 bg-rose-500 rounded-full h-4 animate-bounce" style={{ animationDuration: '0.6s' }} />
+                  <div className="w-1 bg-amber-400 rounded-full h-6 animate-bounce" style={{ animationDuration: '0.4s' }} />
+                  <div className="w-1 bg-cyan-400 rounded-full h-3 animate-bounce" style={{ animationDuration: '0.7s' }} />
+                  <div className="w-1 bg-rose-400 rounded-full h-7 animate-bounce" style={{ animationDuration: '0.5s' }} />
+                  <div className="w-1 bg-cyan-500 rounded-full h-5 animate-bounce" style={{ animationDuration: '0.3s' }} />
+                  <div className="w-1 bg-emerald-400 rounded-full h-4 animate-bounce" style={{ animationDuration: '0.6s' }} />
                 </div>
               )}
             </div>
