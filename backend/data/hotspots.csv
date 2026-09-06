@@ -1,0 +1,30 @@
+hotspot_id,latitude,longitude,district,state,dominant_category,request_count,average_severity,estimated_beneficiaries,infrastructure_gap_score
+HS-000,27.45832,81.91609,Bahraich,Uttar Pradesh,Healthcare,1000,89.85,2069587,81.34
+HS-023,18.80037,81.44709,Bastar,Chhattisgarh,Public Safety,1000,99.02,2596480,86.03
+HS-004,26.20789,85.78699,Darbhanga,Bihar,Water & Sanitation,750,85.17,2308592,76.47
+HS-005,25.82339,87.52163,Araria,Bihar,Water & Sanitation,750,88.5,2619126,79.24
+HS-001,27.47634,80.40658,Hardoi,Uttar Pradesh,Roads & Transport,500,64.9,1341343,71.78
+HS-016,19.17021,83.41913,Rayagada,Odisha,Water & Sanitation,250,94.7,815128,81.26
+HS-027,16.77002,77.14,Yadgir,Karnataka,Education,250,67.1,717065,72.72
+HS-026,16.20218,77.36721,Raichur,Karnataka,Water & Sanitation,250,60.6,867192,68.85
+HS-025,22.59697,80.38057,Mandla,Madhya Pradesh,Healthcare,250,72.0,589650,77.2
+HS-024,22.04557,78.92878,Chhindwara,Madhya Pradesh,Energy & Power,250,60.7,702129,66.31
+HS-022,23.84015,73.71744,Dungarpur,Rajasthan,Education,250,72.5,819071,77.97
+HS-021,23.54844,74.45053,Banswara,Rajasthan,Healthcare,250,92.6,514704,79.97
+HS-020,26.91265,70.90817,Jaisalmer,Rajasthan,Energy & Power,250,69.6,833245,77.2
+HS-019,25.75271,71.39262,Barmer,Rajasthan,Water & Sanitation,250,74.2,853969,81.25
+HS-018,20.83103,82.51926,Nuapada,Odisha,Energy & Power,250,93.9,608962,79.79
+HS-017,18.81302,82.71117,Koraput,Odisha,Roads & Transport,250,92.9,584426,79.92
+HS-014,20.89782,74.77744,Dhule,Maharashtra,Roads & Transport,250,57.6,543744,61.39
+HS-015,19.91045,83.17121,Kalahandi,Odisha,Healthcare,250,96.9,477757,83.11
+HS-013,20.39142,78.11958,Yavatmal,Maharashtra,Energy & Power,250,62.1,516346,66.81
+HS-012,21.36887,74.23973,Nandurbar,Maharashtra,Education,250,71.8,712130,78.59
+HS-011,20.18104,79.99932,Gadchiroli,Maharashtra,Healthcare,250,93.8,713370,79.88
+HS-010,22.41803,87.32099,Paschim Medinipur,West Bengal,Roads & Transport,250,60.9,738657,65.26
+HS-009,23.32712,86.36132,Purulia,West Bengal,Water & Sanitation,250,67.3,633097,72.09
+HS-008,24.17992,88.27103,Murshidabad,West Bengal,Healthcare,250,68.0,559709,73.19
+HS-007,25.00041,88.13867,Malda,West Bengal,Water & Sanitation,250,71.3,476350,76.17
+HS-006,24.79749,85.00154,Gaya,Bihar,Water & Sanitation,250,64.5,853575,69.88
+HS-003,26.84796,80.94378,Lucknow,Uttar Pradesh,Public Safety,250,33.5,767062,41.18
+HS-002,26.2279,81.24072,Raebareli,Uttar Pradesh,Digital Infrastructure & DPI,250,58.7,766161,62.23
+HS-028,19.66017,78.53459,Adilabad,Telangana,Roads & Transport,250,63.7,550290,71.43
