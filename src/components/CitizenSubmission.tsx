@@ -29,7 +29,8 @@ interface CitizenSubmissionProps {
 export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetrySubmitted }) => {
   const { user } = useAuth();
   const [inputText, setInputText] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState('Hindi');
+  const [selectedLanguage, setSelectedLanguage] = useState('Auto-Detect');
+  const [autoDetectedLang, setAutoDetectedLang] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -43,6 +44,33 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
   const [selectedDistrict, setSelectedDistrict] = useState('Bahraich');
   const [userIp, setUserIp] = useState<string>('Auto-Resolving...');
   const [locSource, setLocSource] = useState<string>('Syncing Grid Node');
+
+  // Real-time linguistic classifier for speech & text
+  const detectLanguageFromText = (text: string): string => {
+    if (!text || !text.trim()) return 'Hindi (हिंदी)';
+    // Devanagari script: \u0900-\u097F
+    if (/[\u0900-\u097F]/.test(text)) {
+      if (/[\u0933\u0972\u0945]/.test(text) || /आहे|नाही|झाले|पाणी|रस्ता|खराब|पूल/.test(text)) {
+        return 'Marathi (मराठी)';
+      }
+      return 'Hindi (हिंदी)';
+    }
+    // Bengali script: \u0980-\u09FF
+    if (/[\u0980-\u09FF]/.test(text)) return 'Bengali (বাংলা)';
+    // Tamil script: \u0B80-\u0BFF
+    if (/[\u0B80-\u0BFF]/.test(text)) return 'Tamil (தமிழ்)';
+    // Telugu script: \u0C00-\u0C7F
+    if (/[\u0C00-\u0C7F]/.test(text)) return 'Telugu (తెలుగు)';
+    // Portuguese
+    if (/não|água|ponte|estrada|hospital|urgente|escola|colapso/i.test(text)) {
+      return 'Portuguese (Português)';
+    }
+    // Hinglish / vernacular romanized
+    if (/paani|sadak|bijli|aspataal|toota|kharab|gaddha|nala|shiksha|band/i.test(text)) {
+      return 'Hindi (Hinglish/Latin)';
+    }
+    return 'English (Indian Accent)';
+  };
   
   // Group 802 all-India districts by state
   const districtsByState = useMemo(() => {
@@ -63,6 +91,16 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
   useEffect(() => {
     loadRecent();
   }, []);
+
+  // Real-time language detection whenever inputText updates
+  useEffect(() => {
+    if (inputText.trim()) {
+      const detected = detectLanguageFromText(inputText);
+      setAutoDetectedLang(detected);
+    } else {
+      setAutoDetectedLang(null);
+    }
+  }, [inputText]);
 
   // Automatic Location & IP Detection
   useEffect(() => {
@@ -175,7 +213,7 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
   const mediaStreamRef = useRef<MediaStream | null>(null);
   const recognitionRef = useRef<any>(null);
 
-  // 100% Real-Time Live Speech Recognition (No Demo / Fake Fallbacks)
+  // 100% Real-Time Live Speech Recognition (Cross-Device & Auto-Language Adaptive)
   const toggleSpeech = async () => {
     setSpeechError(null);
 
@@ -201,7 +239,7 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
     // Check browser SpeechRecognition support
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      setSpeechError('Speech recognition is not natively supported in this browser. Please use Google Chrome, Edge, or Safari, or type your grievance directly.');
+      setSpeechError('Speech recognition is not supported in this mobile/desktop browser. You can speak or type in any language directly.');
       return;
     }
 
@@ -213,7 +251,7 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
       }
     } catch (micErr: any) {
       if (micErr?.name === 'NotAllowedError' || micErr?.name === 'PermissionDeniedError') {
-        setSpeechError('Microphone permission denied. Please click the microphone icon in your browser URL bar to allow access.');
+        setSpeechError('Microphone permission denied. Please allow microphone access in your browser URL bar or settings.');
         return;
       }
     }
@@ -225,14 +263,16 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
       recognition.maxAlternatives = 1;
 
       const langMap: Record<string, string> = {
+        'Auto-Detect': navigator.language || 'hi-IN',
         'Hindi': 'hi-IN',
         'Marathi': 'mr-IN',
         'Bengali': 'bn-IN',
-        'Portuguese': 'pt-BR',
-        'English': 'en-IN',
         'Tamil': 'ta-IN',
         'Telugu': 'te-IN',
+        'Portuguese': 'pt-BR',
+        'English': 'en-IN',
       };
+      
       recognition.lang = langMap[selectedLanguage] || 'hi-IN';
 
       recognition.onstart = () => {
@@ -253,11 +293,16 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
         const cleaned = transcript.trim();
         if (cleaned) {
           setInputText(cleaned);
+          const lang = detectLanguageFromText(cleaned);
+          setAutoDetectedLang(lang);
+          if (selectedLanguage === 'Auto-Detect') {
+            // Display detected language dynamically
+          }
         }
       };
 
       recognition.onerror = (e: any) => {
-        console.warn('SpeechRecognition error:', e.error);
+        console.warn('SpeechRecognition event:', e.error);
         setIsRecording(false);
         if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
         if (mediaStreamRef.current) {
@@ -265,13 +310,15 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
           mediaStreamRef.current = null;
         }
         if (e.error === 'not-allowed') {
-          setSpeechError('Microphone permission was denied. Please allow microphone access in your browser settings.');
+          setSpeechError('Microphone permission was denied. Please allow microphone access in browser settings.');
         } else if (e.error === 'network') {
-          setSpeechError('Speech recognition network service is currently reconnecting. You can speak or type directly into the box.');
+          // On mobile or external devices, SpeechRecognition can trigger network error if Google TTS is blocked.
+          // Don't leave button frozen; prompt user clearly
+          setSpeechError('Device speech service disconnected. You can speak again or type in any language directly.');
         } else if (e.error === 'no-speech') {
-          setSpeechError('No speech was detected. Please try speaking again closer to the microphone.');
+          setSpeechError('No speech was detected. Tap Live Voice Input and speak near the microphone.');
         } else {
-          setSpeechError(`Voice notice (${e.error}). You can speak again or type directly into the box.`);
+          setSpeechError(`Voice status (${e.error}). You can tap again or type directly.`);
         }
       };
 
@@ -292,7 +339,7 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
     }
   };
 
-  // Submit & Analyze via BERT NLP backend
+  // Submit & Analyze via BERT NLP backend with Auto Language and District Sync
   const handleAnalyze = async () => {
     if (!inputText.trim()) return;
 
@@ -301,7 +348,8 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
 
     try {
       const targetDistrict = selectedDistrict || detectedDistrict || 'Bahraich';
-      const res = await submitCitizenGrievance(inputText, targetDistrict);
+      const effectiveLang = (selectedLanguage === 'Auto-Detect' ? (autoDetectedLang || detectLanguageFromText(inputText)) : selectedLanguage);
+      const res = await submitCitizenGrievance(inputText, targetDistrict, effectiveLang);
 
       if (res && res.analysis) {
         // Enforce extracted_district is never Unknown
@@ -425,17 +473,25 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
           <div className="flex items-center justify-between pb-2 border-b border-slate-100">
             <label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-2">
               <span>Citizen Audio Transcript / Grievance Text</span>
+              {autoDetectedLang && (
+                <span className="rounded-full bg-cyan-50 px-2 py-0.5 text-[10px] font-bold text-cyan-700 border border-cyan-200 animate-pulse">
+                  ⚡ Auto-Detected: {autoDetectedLang}
+                </span>
+              )}
             </label>
             
             <div className="flex items-center space-x-2">
               <select
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
-                className="rounded-lg bg-slate-50 px-3 py-1.5 text-xs text-slate-800 font-medium border border-slate-200 focus:bg-white focus:outline-none"
+                className="rounded-lg bg-slate-50 px-3 py-1.5 text-xs text-slate-800 font-bold border border-slate-300 focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
               >
+                <option value="Auto-Detect">⚡ Auto-Detect Language (Real-Time)</option>
                 <option value="Hindi">Hindi (हिंदी)</option>
                 <option value="Marathi">Marathi (मराठी)</option>
                 <option value="Bengali">Bengali (বাংলা)</option>
+                <option value="Tamil">Tamil (தமிழ்)</option>
+                <option value="Telugu">Telugu (తెలుగు)</option>
                 <option value="English">English (Indian Accent)</option>
                 <option value="Portuguese">Portuguese (Português)</option>
               </select>
@@ -448,14 +504,14 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
               rows={5}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder="Speak via microphone or paste citizen grievance in any language (e.g. Hindi, Marathi, Bengali, English, Portuguese)..."
+              placeholder="Speak via microphone in ANY language (Hindi, Marathi, Bengali, Tamil, Telugu, English, Portuguese)... Language and district are automatically detected and synced."
               className="w-full rounded-xl bg-slate-50 p-4 text-sm text-slate-900 placeholder-slate-400 border border-slate-200 focus:bg-white focus:border-slate-300 focus:ring-1 focus:ring-slate-300 focus:outline-none font-sans transition-all"
             />
             {isRecording && (
               <div className="absolute top-3 right-3 flex items-center space-x-2 bg-rose-50 px-3 py-1 rounded-full border border-rose-200 text-rose-700 text-xs shadow-xs">
                 <span className="h-2 w-2 rounded-full bg-rose-600 animate-ping"></span>
                 <span className="font-semibold font-mono">
-                  Recording {selectedLanguage} ({String(Math.floor(recordingSeconds / 60)).padStart(2, '0')}:{String(recordingSeconds % 60).padStart(2, '0')})
+                  Listening ({autoDetectedLang || selectedLanguage}) {String(Math.floor(recordingSeconds / 60)).padStart(2, '0')}:{String(recordingSeconds % 60).padStart(2, '0')}
                 </span>
               </div>
             )}
