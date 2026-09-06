@@ -13,6 +13,7 @@ import { DistrictDrawer } from './components/DistrictDrawer';
 import { VisionModal } from './components/VisionModal';
 import { JudgeMode } from './components/JudgeMode';
 import { TelemetryTicker } from './components/TelemetryTicker';
+import { ModelLeaderboardModal } from './components/ModelLeaderboardModal';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -26,6 +27,7 @@ export const App: React.FC = () => {
 
   const [isVisionModalOpen, setIsVisionModalOpen] = useState<boolean>(false);
   const [isJudgeModeOpen, setIsJudgeModeOpen] = useState<boolean>(false);
+  const [isModelLeaderboardOpen, setIsModelLeaderboardOpen] = useState<boolean>(false);
   const [tickerVisible, setTickerVisible] = useState<boolean>(true);
   const [latestTelemetry, setLatestTelemetry] = useState<TelemetryEvent | null>(null);
 
@@ -76,6 +78,7 @@ export const App: React.FC = () => {
         setClimateMode={setClimateMode}
         openVisionModal={() => setIsVisionModalOpen(true)}
         openJudgeMode={() => setIsJudgeModeOpen(true)}
+        openModelLeaderboard={() => setIsModelLeaderboardOpen(true)}
         tickerVisible={tickerVisible}
         setTickerVisible={setTickerVisible}
       />
@@ -141,6 +144,12 @@ export const App: React.FC = () => {
         onInjectAnomaly={(anomaly) => {
           setActiveTab('simulator');
         }}
+      />
+
+      {/* Enterprise ML Model Leaderboard & 2k Test CSV Validator Modal */}
+      <ModelLeaderboardModal
+        isOpen={isModelLeaderboardOpen}
+        onClose={() => setIsModelLeaderboardOpen(false)}
       />
 
       {/* Dedicated Hackathon Judge Walkthrough Modal */}

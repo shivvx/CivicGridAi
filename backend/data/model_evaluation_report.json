@@ -1,0 +1,378 @@
+{
+  "timestamp": "2026-09-06T03:45:36Z",
+  "dataset_metadata": {
+    "total_samples": 10000,
+    "train_samples": 8000,
+    "test_samples": 2000,
+    "split_ratio": "80/20 Stratified",
+    "features_used": [
+      "latitude",
+      "longitude",
+      "population_density",
+      "infrastructure_gap",
+      "budget_required",
+      "days_since_last_maintenance",
+      "upvotes",
+      "state",
+      "district",
+      "category"
+    ],
+    "test_csv_path": "india_infrastructure_hackathon_test_2k.csv"
+  },
+  "benchmarks": {
+    "priority_classification": {
+      "task": "Infrastructure Urgency Multi-Class Classification (Low, Medium, High, Critical)",
+      "active_winner": "LightGBM Classifier",
+      "leaderboard": [
+        {
+          "model_name": "LightGBM Classifier",
+          "accuracy": 0.936,
+          "balanced_accuracy": 0.9423,
+          "macro_f1": 0.9297,
+          "weighted_f1": 0.9365,
+          "macro_precision": 0.9198,
+          "macro_recall": 0.9423,
+          "latency_100_queries_ms": 0.04,
+          "train_duration_sec": 2.294,
+          "confusion_matrix": [
+            [
+              265,
+              0,
+              11,
+              0
+            ],
+            [
+              15,
+              709,
+              26,
+              26
+            ],
+            [
+              35,
+              0,
+              618,
+              0
+            ],
+            [
+              0,
+              15,
+              0,
+              280
+            ]
+          ],
+          "status": "Winner \ud83c\udfc6 (Active in Production API)"
+        },
+        {
+          "model_name": "XGBoost Classifier",
+          "accuracy": 0.9345,
+          "balanced_accuracy": 0.9376,
+          "macro_f1": 0.9281,
+          "weighted_f1": 0.9349,
+          "macro_precision": 0.9207,
+          "macro_recall": 0.9376,
+          "latency_100_queries_ms": 0.03,
+          "train_duration_sec": 0.846,
+          "confusion_matrix": [
+            [
+              264,
+              0,
+              12,
+              0
+            ],
+            [
+              14,
+              714,
+              27,
+              21
+            ],
+            [
+              35,
+              1,
+              617,
+              0
+            ],
+            [
+              0,
+              21,
+              0,
+              274
+            ]
+          ],
+          "status": "Candidate Evaluated"
+        },
+        {
+          "model_name": "HistGradientBoosting",
+          "accuracy": 0.933,
+          "balanced_accuracy": 0.9323,
+          "macro_f1": 0.9256,
+          "weighted_f1": 0.9333,
+          "macro_precision": 0.9201,
+          "macro_recall": 0.9323,
+          "latency_100_queries_ms": 0.34,
+          "train_duration_sec": 6.4,
+          "confusion_matrix": [
+            [
+              256,
+              1,
+              19,
+              0
+            ],
+            [
+              15,
+              713,
+              26,
+              22
+            ],
+            [
+              29,
+              1,
+              623,
+              0
+            ],
+            [
+              0,
+              21,
+              0,
+              274
+            ]
+          ],
+          "status": "Candidate Evaluated"
+        },
+        {
+          "model_name": "Random Forest Classifier",
+          "accuracy": 0.8,
+          "balanced_accuracy": 0.792,
+          "macro_f1": 0.7901,
+          "weighted_f1": 0.8002,
+          "macro_precision": 0.7935,
+          "macro_recall": 0.792,
+          "latency_100_queries_ms": 0.16,
+          "train_duration_sec": 0.244,
+          "confusion_matrix": [
+            [
+              228,
+              24,
+              24,
+              0
+            ],
+            [
+              40,
+              654,
+              45,
+              37
+            ],
+            [
+              52,
+              90,
+              503,
+              8
+            ],
+            [
+              4,
+              56,
+              20,
+              215
+            ]
+          ],
+          "status": "Candidate Evaluated"
+        },
+        {
+          "model_name": "Extra Trees Classifier",
+          "accuracy": 0.609,
+          "balanced_accuracy": 0.4633,
+          "macro_f1": 0.4668,
+          "weighted_f1": 0.5588,
+          "macro_precision": 0.7798,
+          "macro_recall": 0.4633,
+          "latency_100_queries_ms": 0.16,
+          "train_duration_sec": 0.124,
+          "confusion_matrix": [
+            [
+              41,
+              182,
+              53,
+              0
+            ],
+            [
+              3,
+              724,
+              45,
+              4
+            ],
+            [
+              0,
+              242,
+              411,
+              0
+            ],
+            [
+              1,
+              226,
+              26,
+              42
+            ]
+          ],
+          "status": "Candidate Evaluated"
+        },
+        {
+          "model_name": "Calibrated Logistic Regression",
+          "accuracy": 0.463,
+          "balanced_accuracy": 0.3545,
+          "macro_f1": 0.3502,
+          "weighted_f1": 0.4166,
+          "macro_precision": 0.5095,
+          "macro_recall": 0.3545,
+          "latency_100_queries_ms": 0.03,
+          "train_duration_sec": 0.246,
+          "confusion_matrix": [
+            [
+              25,
+              237,
+              14,
+              0
+            ],
+            [
+              15,
+              614,
+              139,
+              8
+            ],
+            [
+              0,
+              376,
+              235,
+              42
+            ],
+            [
+              0,
+              96,
+              147,
+              52
+            ]
+          ],
+          "status": "Candidate Evaluated"
+        }
+      ]
+    },
+    "demand_forecasting": {
+      "task": "30-Day Citizen Demand Volume Forecasting (Regression)",
+      "active_winner": "Ridge Regressor (L2)",
+      "leaderboard": [
+        {
+          "model_name": "Ridge Regressor (L2)",
+          "r2_score": 1.0,
+          "rmse": 3.5168,
+          "mae": 2.8394,
+          "explained_variance": 1.0,
+          "train_duration_sec": 0.014,
+          "status": "Winner \ud83c\udfc6 (Active in Production API)"
+        },
+        {
+          "model_name": "Random Forest Regressor",
+          "r2_score": 0.9952,
+          "rmse": 84.7085,
+          "mae": 9.4819,
+          "explained_variance": 0.9952,
+          "train_duration_sec": 0.434,
+          "status": "Candidate Evaluated"
+        },
+        {
+          "model_name": "LightGBM Regressor",
+          "r2_score": 0.858,
+          "rmse": 459.7707,
+          "mae": 34.2703,
+          "explained_variance": 0.858,
+          "train_duration_sec": 0.545,
+          "status": "Candidate Evaluated"
+        },
+        {
+          "model_name": "HistGradientBoosting Regressor",
+          "r2_score": 0.8166,
+          "rmse": 522.5212,
+          "mae": 38.0061,
+          "explained_variance": 0.8166,
+          "train_duration_sec": 1.811,
+          "status": "Candidate Evaluated"
+        },
+        {
+          "model_name": "XGBoost Regressor",
+          "r2_score": 0.7329,
+          "rmse": 630.5032,
+          "mae": 41.5395,
+          "explained_variance": 0.7329,
+          "train_duration_sec": 0.263,
+          "status": "Candidate Evaluated"
+        }
+      ]
+    },
+    "multilingual_nlp": {
+      "task": "Cross-Lingual Citizen Grievance Intent Classification",
+      "active_winner": "Calibrated LinearSVC",
+      "leaderboard": [
+        {
+          "model_name": "Calibrated LinearSVC",
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "train_duration_sec": 0.236,
+          "status": "Winner \ud83c\udfc6 (Active in Production API)"
+        },
+        {
+          "model_name": "Multinomial Logistic Regression",
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "train_duration_sec": 0.03,
+          "status": "Candidate Evaluated"
+        },
+        {
+          "model_name": "Complement Naive Bayes",
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "train_duration_sec": 0.002,
+          "status": "Candidate Evaluated"
+        },
+        {
+          "model_name": "Random Forest on TF-IDF",
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "train_duration_sec": 0.105,
+          "status": "Candidate Evaluated"
+        }
+      ],
+      "class_mapping": {
+        "Digital & DPI": 0,
+        "Power & Energy": 1,
+        "Roads & Transport": 2,
+        "Sanitation & Waste": 3,
+        "Water Supply": 4
+      }
+    },
+    "spatial_clustering": {
+      "task": "DBSCAN Geospatial Infrastructure Hotspot Discovery",
+      "summary": {
+        "total_hotspots_discovered": 35,
+        "clustered_requests_count": 10000,
+        "noise_requests_count": 0,
+        "top_hotspot_districts": [
+          "Hyderabad",
+          "Chennai",
+          "Darbhanga",
+          "Medchal-Malkajgiri",
+          "Belagavi"
+        ]
+      }
+    }
+  },
+  "system_telemetry": {
+    "total_pipeline_time_sec": 14.09,
+    "models_directory": "/Users/shiv/Documents/civicgoogle/CivicGridAi/backend/models",
+    "python_version": "3.11.16"
+  }
+}

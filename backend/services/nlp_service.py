@@ -21,7 +21,15 @@ class NLPService:
                 self.vectorizer = joblib.load(vec_path)
                 self.classifier = joblib.load(clf_path)
                 if map_path.exists():
-                    self.classes = joblib.load(map_path)
+                    loaded_classes = joblib.load(map_path)
+                    if isinstance(loaded_classes, dict):
+                        # If mapped name -> index, invert to index -> name
+                        if loaded_classes and isinstance(list(loaded_classes.keys())[0], str):
+                            self.classes = {v: k for k, v in loaded_classes.items()}
+                        else:
+                            self.classes = loaded_classes
+                    elif isinstance(loaded_classes, (list, tuple)):
+                        self.classes = {i: c for i, c in enumerate(loaded_classes)}
             except Exception as e:
                 print(f"Error loading NLP models: {e}")
 

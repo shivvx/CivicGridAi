@@ -15,8 +15,10 @@ class Config:
 
     # Data paths
     DATASET_PATH = PROJECT_ROOT / "india_infrastructure_hackathon_10k.csv"
+    TEST_DATASET_PATH = PROJECT_ROOT / "india_infrastructure_hackathon_test_2k.csv"
     HOTSPOTS_PATH = BASE_DIR / "data" / "hotspots.csv"
     MODELS_DIR = BASE_DIR / "models"
+    EVALUATION_REPORT_PATH = BASE_DIR / "data" / "model_evaluation_report.json"
 
     # Infrastructure Sector Taxonomy (7 Classes)
     SECTORS = [

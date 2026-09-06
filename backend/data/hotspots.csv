@@ -1,30 +1,36 @@
-hotspot_id,latitude,longitude,district,state,dominant_category,request_count,average_severity,estimated_beneficiaries,infrastructure_gap_score
-HS-000,27.45832,81.91609,Bahraich,Uttar Pradesh,Healthcare,1000,89.85,2069587,81.34
-HS-023,18.80037,81.44709,Bastar,Chhattisgarh,Public Safety,1000,99.02,2596480,86.03
-HS-004,26.20789,85.78699,Darbhanga,Bihar,Water & Sanitation,750,85.17,2308592,76.47
-HS-005,25.82339,87.52163,Araria,Bihar,Water & Sanitation,750,88.5,2619126,79.24
-HS-001,27.47634,80.40658,Hardoi,Uttar Pradesh,Roads & Transport,500,64.9,1341343,71.78
-HS-016,19.17021,83.41913,Rayagada,Odisha,Water & Sanitation,250,94.7,815128,81.26
-HS-027,16.77002,77.14,Yadgir,Karnataka,Education,250,67.1,717065,72.72
-HS-026,16.20218,77.36721,Raichur,Karnataka,Water & Sanitation,250,60.6,867192,68.85
-HS-025,22.59697,80.38057,Mandla,Madhya Pradesh,Healthcare,250,72.0,589650,77.2
-HS-024,22.04557,78.92878,Chhindwara,Madhya Pradesh,Energy & Power,250,60.7,702129,66.31
-HS-022,23.84015,73.71744,Dungarpur,Rajasthan,Education,250,72.5,819071,77.97
-HS-021,23.54844,74.45053,Banswara,Rajasthan,Healthcare,250,92.6,514704,79.97
-HS-020,26.91265,70.90817,Jaisalmer,Rajasthan,Energy & Power,250,69.6,833245,77.2
-HS-019,25.75271,71.39262,Barmer,Rajasthan,Water & Sanitation,250,74.2,853969,81.25
-HS-018,20.83103,82.51926,Nuapada,Odisha,Energy & Power,250,93.9,608962,79.79
-HS-017,18.81302,82.71117,Koraput,Odisha,Roads & Transport,250,92.9,584426,79.92
-HS-014,20.89782,74.77744,Dhule,Maharashtra,Roads & Transport,250,57.6,543744,61.39
-HS-015,19.91045,83.17121,Kalahandi,Odisha,Healthcare,250,96.9,477757,83.11
-HS-013,20.39142,78.11958,Yavatmal,Maharashtra,Energy & Power,250,62.1,516346,66.81
-HS-012,21.36887,74.23973,Nandurbar,Maharashtra,Education,250,71.8,712130,78.59
-HS-011,20.18104,79.99932,Gadchiroli,Maharashtra,Healthcare,250,93.8,713370,79.88
-HS-010,22.41803,87.32099,Paschim Medinipur,West Bengal,Roads & Transport,250,60.9,738657,65.26
-HS-009,23.32712,86.36132,Purulia,West Bengal,Water & Sanitation,250,67.3,633097,72.09
-HS-008,24.17992,88.27103,Murshidabad,West Bengal,Healthcare,250,68.0,559709,73.19
-HS-007,25.00041,88.13867,Malda,West Bengal,Water & Sanitation,250,71.3,476350,76.17
-HS-006,24.79749,85.00154,Gaya,Bihar,Water & Sanitation,250,64.5,853575,69.88
-HS-003,26.84796,80.94378,Lucknow,Uttar Pradesh,Public Safety,250,33.5,767062,41.18
-HS-002,26.2279,81.24072,Raebareli,Uttar Pradesh,Digital Infrastructure & DPI,250,58.7,766161,62.23
-HS-028,19.66017,78.53459,Adilabad,Telangana,Roads & Transport,250,63.7,550290,71.43
+cluster,latitude,longitude,district,state,dominant_category,request_count,average_severity,infrastructure_gap_score,hotspot_id,estimated_beneficiaries
+0,12.36986,80.35431,Hyderabad,Telangana,Water Supply,264,64.1,54.6,HS-001,488400
+1,23.74095,89.88454,Chennai,Tamil Nadu,Water Supply,248,62.4,54.0,HS-002,458800
+2,26.13719,85.64489,Darbhanga,Bihar,Water Supply,506,63.0,51.7,HS-003,936100
+3,29.75459,77.60742,Medchal-Malkajgiri,Telangana,Power & Energy,261,62.1,53.2,HS-004,482850
+4,14.66287,88.01396,Belagavi,Karnataka,Power & Energy,467,62.8,53.4,HS-005,863950
+5,17.76696,86.73336,Warangal,Maharashtra,Digital & DPI,739,62.2,51.8,HS-006,1367150
+6,22.16039,81.0144,Patna,Bihar,Digital & DPI,216,61.5,51.0,HS-007,399600
+7,25.86388,72.44565,Prayagraj,Uttar Pradesh,Roads & Transport,223,60.1,50.4,HS-008,412550
+8,17.512,83.41137,Mangaluru,Karnataka,Roads & Transport,244,65.8,54.8,HS-009,451400
+9,17.4244,75.51719,North 24 Parganas,Karnataka,Power & Energy,739,61.4,52.5,HS-010,1367150
+10,24.79429,85.00198,Gaya,Bihar,Power & Energy,237,61.5,52.3,HS-011,438450
+11,21.39232,73.46844,Salem,Tamil Nadu,Roads & Transport,253,61.1,48.8,HS-012,468050
+12,21.62073,78.34045,Bhavnagar,Gujarat,Digital & DPI,237,63.0,52.8,HS-013,438450
+13,12.74253,81.88707,Ahmedabad,Gujarat,Roads & Transport,254,61.9,52.9,HS-014,469900
+14,24.59105,88.1161,Agra,Uttar Pradesh,Sanitation & Waste,261,63.0,50.4,HS-015,482850
+15,12.51411,87.60679,Trichy,Tamil Nadu,Water Supply,234,60.8,52.0,HS-016,432900
+16,14.19865,72.15006,Hooghly,West Bengal,Power & Energy,243,63.1,51.2,HS-017,449550
+17,14.8165,74.68985,South 24 Parganas,West Bengal,Roads & Transport,232,62.3,51.3,HS-018,429200
+18,26.84713,80.94816,Lucknow,Uttar Pradesh,Sanitation & Waste,229,61.5,52.7,HS-019,423650
+19,17.60279,73.55928,Nagpur,Maharashtra,Digital & DPI,242,62.3,52.6,HS-020,447700
+20,17.38334,89.4227,Coimbatore,Tamil Nadu,Sanitation & Waste,222,61.6,50.7,HS-021,410700
+21,18.3469,82.0887,Kanpur Nagar,Uttar Pradesh,Digital & DPI,218,62.8,50.1,HS-022,403300
+22,26.0932,80.43663,Thane,Maharashtra,Power & Energy,257,58.9,47.4,HS-023,475450
+23,12.77472,85.19803,Mumbai Suburban,Maharashtra,Roads & Transport,216,62.7,49.5,HS-024,399600
+24,18.46841,89.03749,Nizamabad,Telangana,Water Supply,219,63.1,54.8,HS-025,405150
+25,13.68215,72.8258,Varanasi,Uttar Pradesh,Water Supply,237,60.7,49.6,HS-026,438450
+26,22.5,79.5,Unknown,Tamil Nadu,Water Supply,400,63.8,54.0,HS-027,740000
+27,24.39394,72.9106,Kolkata,West Bengal,Digital & DPI,223,62.3,53.2,HS-028,412550
+28,13.63981,85.61381,Rangareddy,Telangana,Water Supply,209,61.2,52.1,HS-029,386650
+29,23.19638,77.80694,Pune,Maharashtra,Power & Energy,248,62.3,52.8,HS-030,458800
+30,24.99707,80.72231,Bhagalpur,Bihar,Roads & Transport,259,62.5,50.4,HS-031,479150
+31,12.28045,74.52129,Madurai,Tamil Nadu,Roads & Transport,249,60.9,52.7,HS-032,460650
+32,28.95488,80.08286,Howrah,West Bengal,Digital & DPI,248,60.0,48.7,HS-033,458800
+33,28.77938,82.16338,Rajkot,Gujarat,Digital & DPI,229,60.4,51.8,HS-034,423650
+34,15.99844,74.40737,Vadodara,Gujarat,Water Supply,237,61.9,51.4,HS-035,438450

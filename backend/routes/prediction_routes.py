@@ -23,3 +23,30 @@ def explain_decision():
     data = request.get_json() or {}
     explanation = ml_service.explain_priority_decision(data)
     return jsonify(explanation), 200
+
+@prediction_bp.route("/models_benchmark", methods=["GET"])
+def models_benchmark():
+    """
+    Returns full comparative evaluation scorecard across trained ML models
+    (Classifiers, Regressors, Multilingual NLP, and DBSCAN Spatial Hotspots)
+    """
+    benchmark_data = ml_service.get_model_benchmarks()
+    return jsonify(benchmark_data), 200
+
+@prediction_bp.route("/test_samples", methods=["GET"])
+def test_samples():
+    """
+    Returns real records from the 2,000-record held-out test CSV for interactive testing
+    """
+    count = int(request.args.get("count", 15))
+    samples = ml_service.get_test_samples(count=count)
+    return jsonify({"count": len(samples), "samples": samples}), 200
+
+@prediction_bp.route("/test_sample_inference", methods=["POST"])
+def test_sample_inference():
+    """
+    Runs live model inference against a test sample and verifies prediction against Ground Truth
+    """
+    data = request.get_json() or {}
+    evaluation = ml_service.evaluate_test_sample(data)
+    return jsonify(evaluation), 200

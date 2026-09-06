@@ -102,3 +102,23 @@ export async function generateDpr(district: string) {
   });
   return res.json();
 }
+
+export async function fetchModelBenchmarks() {
+  const res = await fetch(`${API_BASE}/prediction/models_benchmark`);
+  return res.json();
+}
+
+export async function fetchTestSamples(count: number = 15) {
+  const res = await fetch(`${API_BASE}/prediction/test_samples?count=${count}`);
+  return res.json();
+}
+
+export async function runTestSampleInference(sample: any) {
+  const res = await fetch(`${API_BASE}/prediction/test_sample_inference`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(sample)
+  });
+  return res.json();
+}
+

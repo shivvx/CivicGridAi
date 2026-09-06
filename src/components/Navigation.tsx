@@ -10,7 +10,8 @@ import {
   Leaf, 
   Award,
   Radio,
-  Lock
+  Lock,
+  Cpu
 } from 'lucide-react';
 
 interface NavigationProps {
@@ -20,6 +21,7 @@ interface NavigationProps {
   setClimateMode: (mode: boolean) => void;
   openVisionModal: () => void;
   openJudgeMode: () => void;
+  openModelLeaderboard: () => void;
   tickerVisible: boolean;
   setTickerVisible: (visible: boolean) => void;
 }
@@ -31,6 +33,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   setClimateMode,
   openVisionModal,
   openJudgeMode,
+  openModelLeaderboard,
   tickerVisible,
   setTickerVisible
 }) => {
@@ -117,6 +120,16 @@ export const Navigation: React.FC<NavigationProps> = ({
           >
             <Satellite className="h-3.5 w-3.5 text-cyan-400" />
             <span className="hidden sm:inline">Satellite CV</span>
+          </button>
+
+          {/* ML Models & 2k Test Suite Button */}
+          <button
+            onClick={openModelLeaderboard}
+            className="flex items-center space-x-1.5 rounded-lg bg-slate-900/80 px-2.5 py-1.5 text-xs font-semibold text-emerald-300 border border-emerald-500/30 hover:bg-emerald-950/50 hover:border-emerald-400 transition-all shadow-sm"
+            title="Inspect 15 Trained Machine Learning Architectures & 2,000-Sample Test Set Leaderboard"
+          >
+            <Cpu className="h-3.5 w-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">ML Leaderboard</span>
           </button>
 
           {/* Dedicated Judge Mode Button */}
