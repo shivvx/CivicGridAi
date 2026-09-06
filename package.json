@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "auto-pull": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/auto_pull_watcher.ps1"
   },
   "dependencies": {
     "canvas-confetti": "^1.9.4",

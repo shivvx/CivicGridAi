@@ -59,24 +59,33 @@ export const Navigation: React.FC<NavigationProps> = ({
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         
         {/* Brand Logo & Security Badge */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3 shrink-0 whitespace-nowrap">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 via-indigo-600 to-blue-600 shadow-md shadow-cyan-500/20 shrink-0">
             <Radio className="h-5 w-5 text-white animate-pulse" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center space-x-2">
-              <span className="font-display text-lg font-black tracking-tight text-white leading-none">
-                CIVIC<span className="text-cyan-400">GRID</span> <span className="text-indigo-400">AI</span>
+              <span className="font-display text-lg font-bold tracking-tight text-white flex items-center leading-none">
+                <span>Civic<span className="text-cyan-400">Grid</span></span>
+                <span className="ml-1.5 rounded-md bg-cyan-500/15 border border-cyan-400/30 px-1.5 py-0.5 text-[10px] font-mono font-bold text-cyan-300">AI</span>
               </span>
-              <span className="rounded-full bg-cyan-950/80 px-2 py-0.5 text-[9px] font-bold text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
+              <span className="rounded-full bg-cyan-950/80 px-2 py-0.5 text-[9px] font-semibold text-cyan-300 border border-cyan-500/30 uppercase tracking-wider hidden sm:inline-block">
                 Enterprise
               </span>
             </div>
-            {/* Wi-Fi Loopback Isolation Badge */}
-            <div className="flex items-center space-x-1 text-[11px] text-emerald-400 mt-1">
-              <Lock className="h-3 w-3 text-emerald-400 shrink-0" />
-              <span className="font-mono text-[10px] text-slate-400">
-                127.0.0.1:8750 <span className="text-emerald-400 font-semibold">• Loopback Protected</span>
+            {/* National Infrastructure Theme Tagline with Live Security Indicator */}
+            <div 
+              className="flex items-center space-x-1.5 text-[10px] text-slate-400 mt-1 cursor-default"
+              title="Strict Loopback Isolation Active (127.0.0.1:8750) • Core Engine Verified"
+            >
+              <span className="relative flex h-2 w-2 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="font-medium text-slate-300">National Decision Grid</span>
+              <span className="text-slate-600">•</span>
+              <span className="font-mono text-[9px] text-emerald-400 flex items-center gap-0.5">
+                <Lock className="h-2.5 w-2.5" /> Secured
               </span>
             </div>
           </div>
