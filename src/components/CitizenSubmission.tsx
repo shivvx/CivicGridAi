@@ -46,45 +46,6 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
   
   const timerIntervalRef = useRef<any>(null);
 
-  // Web Speech Recognition reference
-  const recognitionRef = useRef<any>(null);
-
-  // Word-for-Word Presets from Part I of Master Manual
-  const PRESET_SCRIPTS = [
-    {
-      lang: 'Hindi (हिंदी)',
-      id: 'Hindi',
-      label: 'UP Healthcare & Monsoon Flooding',
-      district: 'Bahraich',
-      sector: 'Healthcare',
-      text: 'हमारे बहराइच जिले में प्राथमिक स्वास्थ्य केंद्र में डॉक्टर नहीं हैं और सड़क टूटी होने से बारिश में अस्पताल तक पहुंचना नामुमकिन हो गया है।'
-    },
-    {
-      lang: 'Bengali (বাংলা)',
-      id: 'Bengali',
-      label: 'North Bengal Drinking Water Rupture',
-      district: 'Malda',
-      sector: 'Water & Sanitation',
-      text: 'আমাদের মালদা এবং কাটিহার অঞ্চলে পানীয় জলের পাইপলাইন ফেটে গেছে, মানুষ নোংরা জল খেতে বাধ্য হচ্ছে।'
-    },
-    {
-      lang: 'English',
-      id: 'English',
-      label: 'Sitapur Agricultural Transformer Failure',
-      district: 'Sitapur',
-      sector: 'Energy & Power',
-      text: 'In Sitapur district, the main agricultural power transformer has been blown for three weeks, completely halting rural irrigation.'
-    },
-    {
-      lang: 'Portuguese',
-      id: 'Portuguese',
-      label: 'Rural Health Clinic & Collapsed Bridge',
-      district: 'Darbhanga',
-      sector: 'Healthcare / Roads',
-      text: 'O posto de saúde comunitário está sem médicos e a ponte de concreto desabou, deixando a comunidade ilhada.'
-    }
-  ];
-
   useEffect(() => {
     loadRecent();
   }, []);
@@ -195,25 +156,16 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
     }
   };
 
-  const handleSelectPreset = (preset: typeof PRESET_SCRIPTS[0]) => {
-    setInputText(preset.text);
-    setSelectedLanguage(preset.id);
-    setSelectedDistrict(preset.district);
-    setAnalysisResult(null);
-  };
-
   // State for speech error message
   const [speechError, setSpeechError] = useState<string | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const speechCapturedRef = useRef<string>('');
+  const recognitionRef = useRef<any>(null);
 
-  // Bulletproof Cross-Device Live Voice Recording
+  // 100% Real-Time Live Speech Recognition (No Demo / Fake Fallbacks)
   const toggleSpeech = async () => {
     setSpeechError(null);
 
     if (isRecording) {
-      // STOP RECORDING
       setIsRecording(false);
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
 
@@ -229,108 +181,87 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
         mediaStreamRef.current.getTracks().forEach(track => track.stop());
         mediaStreamRef.current = null;
       }
-
-      // If speech recognition was blocked by network, synthesize realistic text for the chosen language
-      if (!inputText.trim() && !speechCapturedRef.current.trim()) {
-        const fallbacksByLang: Record<string, string> = {
-          'Hindi': `हमारे ${selectedDistrict} जिले में सड़क और जल आपूर्ति की गंभीर समस्या है, कृपया त्वरित सहायता प्रदान करें।`,
-          'Marathi': `आमच्या ${selectedDistrict} जिल्ह्यातील वीज पुरवठा व रस्ते दुरुस्ती तात्काळ करा.`,
-          'Bengali': `আমাদের ${selectedDistrict} অঞ্চলে পানীয় জল এবং রাস্তার সমস্যা দ্রুত সমাধান করুন।`,
-          'English': `Urgent infrastructure maintenance required in ${selectedDistrict} district for roads and water supply pipelines.`,
-          'Portuguese': `Manutenção urgente de infraestrutura necessária no distrito de ${selectedDistrict} para estradas e abastecimento de água.`,
-        };
-        const text = fallbacksByLang[selectedLanguage] || fallbacksByLang['English'];
-        setInputText(text);
-      }
       return;
     }
 
-    // START RECORDING
-    speechCapturedRef.current = '';
-    
-    // 1. Request microphone access for real hardware audio
+    // Check browser SpeechRecognition support
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setSpeechError('Speech recognition is not natively supported in this browser. Please use Google Chrome, Edge, or Safari, or type your grievance directly.');
+      return;
+    }
+
+    // Request microphone access
     try {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         mediaStreamRef.current = stream;
-        try {
-          const recorder = new MediaRecorder(stream);
-          mediaRecorderRef.current = recorder;
-          recorder.start();
-        } catch (recErr) {
-          console.log('MediaRecorder info:', recErr);
-        }
       }
     } catch (micErr: any) {
-      console.warn('Microphone permission info:', micErr);
       if (micErr?.name === 'NotAllowedError' || micErr?.name === 'PermissionDeniedError') {
-        setSpeechError('Microphone permission not granted. Please allow microphone access in your browser bar.');
+        setSpeechError('Microphone permission denied. Please click the microphone icon in your browser URL bar to allow access.');
         return;
       }
     }
 
-    setIsRecording(true);
-    setRecordingSeconds(0);
-    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    timerIntervalRef.current = setInterval(() => {
-      setRecordingSeconds(prev => prev + 1);
-    }, 1000);
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
 
-    // 2. Initialize Web Speech Recognition in parallel if available
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      try {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
-        recognition.maxAlternatives = 1;
+      const langMap: Record<string, string> = {
+        'Hindi': 'hi-IN',
+        'Marathi': 'mr-IN',
+        'Bengali': 'bn-IN',
+        'Portuguese': 'pt-BR',
+        'English': 'en-IN',
+        'Tamil': 'ta-IN',
+        'Telugu': 'te-IN',
+      };
+      recognition.lang = langMap[selectedLanguage] || 'hi-IN';
 
-        const langMap: Record<string, string> = {
-          'Hindi': 'hi-IN',
-          'Marathi': 'mr-IN',
-          'Bengali': 'bn-IN',
-          'Portuguese': 'pt-BR',
-          'English': 'en-IN',
-          'Tamil': 'ta-IN',
-          'Telugu': 'te-IN',
-        };
-        recognition.lang = langMap[selectedLanguage] || 'en-IN';
+      recognition.onstart = () => {
+        setIsRecording(true);
+        setSpeechError(null);
+        setRecordingSeconds(0);
+        if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = setInterval(() => {
+          setRecordingSeconds(prev => prev + 1);
+        }, 1000);
+      };
 
-        recognition.onresult = (event: any) => {
-          let finalTranscript = '';
-          let interimTranscript = '';
-          for (let i = 0; i < event.results.length; i++) {
-            const result = event.results[i];
-            if (result.isFinal) {
-              finalTranscript += result[0].transcript + ' ';
-            } else {
-              interimTranscript += result[0].transcript;
-            }
-          }
-          const full = (finalTranscript + interimTranscript).trim();
-          speechCapturedRef.current = full;
-          if (full) {
-            setInputText(full);
-          }
-        };
+      recognition.onresult = (event: any) => {
+        let transcript = '';
+        for (let i = 0; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript + ' ';
+        }
+        const cleaned = transcript.trim();
+        if (cleaned) {
+          setInputText(cleaned);
+        }
+      };
 
-        recognition.onerror = (e: any) => {
-          console.warn('SpeechRecognition notification (handled gracefully):', e.error);
-          // Never abort audio recording on network or no-speech error
-          if (e.error === 'not-allowed') {
-            setSpeechError('Microphone access is blocked in browser settings.');
-          }
-        };
+      recognition.onerror = (e: any) => {
+        console.warn('SpeechRecognition error:', e.error);
+        if (e.error === 'not-allowed') {
+          setSpeechError('Microphone permission was denied. Please allow microphone access in your browser settings.');
+          setIsRecording(false);
+          if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+        } else if (e.error === 'network') {
+          setSpeechError('Speech recognition network service is currently reconnecting. You can speak or type directly into the box.');
+        }
+      };
 
-        recognition.onend = () => {
-          // Keep recording state controlled by user stop button
-        };
+      recognition.onend = () => {
+        // Recognition completed
+      };
 
-        recognitionRef.current = recognition;
-        recognition.start();
-      } catch (err) {
-        console.warn('SpeechRecognition initialization note:', err);
-      }
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err: any) {
+      setSpeechError('Failed to start voice recognition. Please verify microphone permissions.');
+      setIsRecording(false);
     }
   };
 
@@ -390,29 +321,6 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
           </div>
         </div>
 
-        {/* Live Demo Voice Presets */}
-        <div className="mt-5 pt-4 border-t border-slate-100">
-          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-2">
-            Live Evaluator Voice Presets (Click to Test):
-          </span>
-          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-            {PRESET_SCRIPTS.map((preset) => (
-              <button
-                key={preset.label}
-                onClick={() => handleSelectPreset(preset)}
-                className="flex flex-col justify-between rounded-xl bg-slate-50 p-3.5 border border-slate-200 hover:border-slate-300 hover:bg-white hover:shadow-xs text-left transition-all group"
-              >
-                <div>
-                  <div className="text-[11px] font-bold text-emerald-700 font-mono">{preset.lang}</div>
-                  <div className="text-xs font-bold text-slate-900 mt-0.5 group-hover:text-emerald-700 transition-colors">{preset.label}</div>
-                </div>
-                <div className="text-[10px] text-slate-500 mt-2 line-clamp-1 italic">
-                  "{preset.text}"
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
