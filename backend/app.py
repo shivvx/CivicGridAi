@@ -23,8 +23,11 @@ from backend.routes.vision_routes import vision_bp
 def create_app():
     app = Flask(__name__)
     
-    # CORS: Allow loopback origins
-    CORS(app, resources={r"/api/*": {"origins": ["http://127.0.0.1:8750", "http://localhost:8750", "http://127.0.0.1:5173", "http://localhost:5173"]}})
+    # CORS: Allow loopback origins and production Firebase Hosting
+    CORS(app, resources={r"/api/*": {
+        "origins": ["http://127.0.0.1:8750", "http://localhost:8750", "http://127.0.0.1:5173", "http://localhost:5173", "https://civicgridwiroxa.web.app", "https://civicgridwiroxa.firebaseapp.com", "*"],
+        "allow_headers": ["Content-Type", "Authorization", "bypass-tunnel-reminder", "X-Requested-With"]
+    }})
 
     # Register Blueprints
     app.register_blueprint(citizen_bp, url_prefix="/api/citizen")
