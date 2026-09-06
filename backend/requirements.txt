@@ -9,3 +9,5 @@ ortools>=9.8.3296
 shap>=0.44.0
 requests>=2.31.0
 scipy>=1.11.0
+gunicorn>=21.2.0
+
