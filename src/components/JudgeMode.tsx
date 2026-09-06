@@ -95,20 +95,20 @@ export const JudgeMode: React.FC<JudgeModeProps> = ({ isOpen, onClose, onNavigat
         {/* Header */}
         <div className="flex items-center justify-between border-b border-slate-200 pb-4">
           <div className="flex items-center space-x-3">
-            <div className="p-2.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 shadow-xs">
-              <Award className="h-6 w-6" />
+            <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-xs">
+              <ShieldCheck className="h-6 w-6" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <h3 className="text-lg font-bold text-slate-900">
-                  CivicGrid AI — Hackathon Evaluator & Judge Tour
+                  CivicGrid AI — Executive Architecture Briefing
                 </h3>
-                <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-[10px] font-bold text-amber-800 border border-amber-200">
-                  Step {currentStep + 1} of 6
+                <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800 border border-emerald-200">
+                  Module {currentStep + 1} of 6
                 </span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
-                Guided technical evaluation showing all 4 AI/ML tiers, SCIP knapsack optimization, and the 8 expansion features
+                Technical architecture audit: Multilingual NLP, Spatial DBSCAN, XGBoost, SCIP Knapsack & Cryptographic Lineage
               </p>
             </div>
           </div>
@@ -137,7 +137,7 @@ export const JudgeMode: React.FC<JudgeModeProps> = ({ isOpen, onClose, onNavigat
           <div className="rounded-xl bg-slate-50 p-4 border border-slate-200 space-y-3">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">
-                Executive Demonstration Highlight
+                Executive Capability & Operational Impact
               </span>
               <p className="text-xs text-slate-800 leading-relaxed font-normal">
                 {step.pitch}
@@ -146,7 +146,7 @@ export const JudgeMode: React.FC<JudgeModeProps> = ({ isOpen, onClose, onNavigat
 
             <div className="pt-2 border-t border-slate-200">
               <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 block mb-1">
-                Hardcore Technical Defense for Judges
+                Algorithmic & Mathematical Architecture
               </span>
               <p className="text-xs text-slate-600 leading-relaxed font-sans">
                 {step.judgeProof}

@@ -141,14 +141,14 @@ export const Navigation: React.FC<NavigationProps> = ({
             <span className="hidden md:inline">ML Benchmark</span>
           </button>
 
-          {/* High-Level Judge Demo Mode Button (Prominent) */}
+          {/* Executive Architecture Briefing Button */}
           <button
             onClick={openJudgeMode}
             className="flex items-center space-x-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 text-xs font-bold shadow-xs transition-all hover:scale-[1.02]"
-            title="Launch 6-Step Hackathon Judge Walkthrough Tour"
+            title="System Architecture & Executive Intelligence Briefing"
           >
-            <Award className="h-3.5 w-3.5 text-emerald-400" />
-            <span>Judge Demo</span>
+            <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+            <span>Executive Briefing</span>
           </button>
 
           {/* User Auth & Role Switcher */}
