@@ -49,23 +49,23 @@ export const Navigation: React.FC<NavigationProps> = ({
         
         {/* Brand Logo & Security Badge */}
         <div className="flex items-center space-x-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 via-indigo-600 to-blue-700 shadow-lg shadow-cyan-500/25">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 via-indigo-600 to-blue-600 shadow-md shadow-cyan-500/20 shrink-0">
             <Radio className="h-5 w-5 text-white animate-pulse" />
           </div>
-          <div>
+          <div className="flex flex-col">
             <div className="flex items-center space-x-2">
-              <span className="font-display text-lg font-black tracking-tight text-white">
+              <span className="font-display text-lg font-black tracking-tight text-white leading-none">
                 CIVIC<span className="text-cyan-400">GRID</span> <span className="text-indigo-400">AI</span>
               </span>
-              <span className="rounded-full bg-cyan-950/80 px-2 py-0.5 text-[10px] font-semibold text-cyan-300 border border-cyan-500/30">
-                v2.6 PROD
+              <span className="rounded-full bg-cyan-950/80 px-2 py-0.5 text-[9px] font-bold text-cyan-300 border border-cyan-500/30 uppercase tracking-wider">
+                Enterprise
               </span>
             </div>
             {/* Wi-Fi Loopback Isolation Badge */}
-            <div className="flex items-center space-x-1.5 text-[11px] text-emerald-400">
-              <Lock className="h-3 w-3 text-emerald-400" />
-              <span className="font-mono text-[10px] tracking-tight text-slate-300">
-                127.0.0.1:8750 <span className="text-emerald-400 font-semibold">• Loopback Isolated</span>
+            <div className="flex items-center space-x-1 text-[11px] text-emerald-400 mt-1">
+              <Lock className="h-3 w-3 text-emerald-400 shrink-0" />
+              <span className="font-mono text-[10px] text-slate-400">
+                127.0.0.1:8750 <span className="text-emerald-400 font-semibold">• Loopback Protected</span>
               </span>
             </div>
           </div>

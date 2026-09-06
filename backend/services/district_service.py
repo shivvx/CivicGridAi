@@ -33,12 +33,12 @@ class DistrictService:
             # Synthetic deterministic citizen complaints volume
             req_count = int((gap / 100.0) * (pop / 10000.0) * 1.8 + (rural_pct / 100.0) * 80)
             
-            # 1. S_demand (30% weight, normalized per 10,000 residents and capped at 100)
+            # 1. S_demand (30% weight, normalized per 10,000 residents, scaled to 0-100)
             req_per_10k = (req_count / max(1.0, pop / 10000.0))
-            s_demand = min(100.0, round((req_per_10k / 25.0) * 100.0, 1))
+            s_demand = min(100.0, max(15.0, round((req_per_10k / 2.2) * 100.0, 1)))
 
             # 2. S_gap (25% weight, physical infrastructure gap)
-            s_gap = min(100.0, round(gap * 1.15, 1))
+            s_gap = min(100.0, round(gap * 1.05, 1))
 
             # 3. S_pop (15% weight, rural population & density impact)
             rural_factor = rural_pct / 100.0
