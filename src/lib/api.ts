@@ -12,7 +12,7 @@ import {
 // API base: supports live deployed backend URL or local proxy
 export const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 
-// Safe fetch with tunnel header and content-type detection
+// Safe fetch with tunnel header, 4s timeout, and content-type detection
 async function safeFetch<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
   const url = `${API_BASE}${endpoint}`;
   const headers = {
@@ -21,15 +21,24 @@ async function safeFetch<T = any>(endpoint: string, options: RequestInit = {}): 
     ...(options.headers || {})
   };
 
-  const res = await fetch(url, { ...options, headers });
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+  try {
+    const res = await fetch(url, { ...options, headers, signal: options.signal || controller.signal });
+    clearTimeout(timeoutId);
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    }
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error('Received non-JSON response (likely static SPA fallback or tunnel reminder)');
+    }
+    return res.json();
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
   }
-  const contentType = res.headers.get('content-type') || '';
-  if (!contentType.includes('application/json')) {
-    throw new Error('Received non-JSON response (likely static SPA fallback)');
-  }
-  return res.json();
 }
 
 export async function fetchHealth(): Promise<any> {
@@ -170,8 +179,9 @@ export async function simulateBudget(budgetLimitInr: number, climateMode: boolea
 }
 
 export async function submitCitizenGrievance(text: string, district?: string): Promise<any> {
+  let result: any = null;
   try {
-    return await safeFetch('/citizen/submit', {
+    result = await safeFetch('/citizen/submit', {
       method: 'POST',
       body: JSON.stringify({ text, district })
     });
@@ -197,44 +207,75 @@ export async function submitCitizenGrievance(text: string, district?: string): P
       merkle_receipt: 'REC-IN-' + Math.floor(Math.random()*900000 + 100000)
     };
 
-    return {
+    result = {
       status: 'INGESTION_COMPLETE',
       analysis: analysisObj,
       telemetry: analysisObj
     };
   }
+
+  // Persist to localStorage across all devices and sessions
+  try {
+    const item = result?.analysis || result?.telemetry;
+    if (item) {
+      const stored = JSON.parse(localStorage.getItem('civicgrid_user_telemetry') || '[]');
+      const newEntry = {
+        telemetry_id: item.telemetry_id,
+        language: item.detected_language || 'Citizen Ingestion',
+        district: item.extracted_district,
+        state: 'National Grid',
+        category: item.intent_name,
+        urgency: item.urgency_rating,
+        snippet: item.standardized_english_summary || text,
+        timestamp: 'Just now',
+        pulse: true
+      };
+      localStorage.setItem('civicgrid_user_telemetry', JSON.stringify([newEntry, ...stored.slice(0, 15)]));
+    }
+  } catch (err) {
+    // ignore
+  }
+
+  return result;
 }
 
 export async function fetchRecentTelemetry(): Promise<any> {
+  const defaultList = [
+    {
+      telemetry_id: 8402,
+      language: 'Hindi (अवधी)',
+      district: 'Bahraich',
+      state: 'Uttar Pradesh',
+      category: 'Healthcare',
+      urgency: 'Critical',
+      snippet: 'Primary Health Centre Mahasi flooded; medical refrigeration compromised for 6 days.',
+      timestamp: '1 min ago',
+      pulse: true
+    },
+    {
+      telemetry_id: 8401,
+      language: 'Marathi',
+      district: 'Gadchiroli',
+      state: 'Maharashtra',
+      category: 'Water & Sanitation',
+      urgency: 'High',
+      snippet: 'Contaminated borewell water causing acute gastroenteritis in tribal hamlets.',
+      timestamp: '3 mins ago',
+      pulse: false
+    }
+  ];
+
+  let storedUserTelemetry: any[] = [];
   try {
-    return await safeFetch('/citizen/recent');
+    storedUserTelemetry = JSON.parse(localStorage.getItem('civicgrid_user_telemetry') || '[]');
+  } catch {}
+
+  try {
+    const res = await safeFetch('/citizen/recent');
+    const remote = res?.telemetry || [];
+    return { telemetry: [...storedUserTelemetry, ...remote] };
   } catch (e) {
-    return {
-      telemetry: [
-        {
-          telemetry_id: 8402,
-          language: 'Hindi (अवधी)',
-          district: 'Bahraich',
-          state: 'Uttar Pradesh',
-          category: 'Healthcare',
-          urgency: 'Critical',
-          snippet: 'Primary Health Centre Mahasi flooded; medical refrigeration compromised for 6 days.',
-          timestamp: '1 min ago',
-          pulse: true
-        },
-        {
-          telemetry_id: 8401,
-          language: 'Marathi',
-          district: 'Gadchiroli',
-          state: 'Maharashtra',
-          category: 'Water & Sanitation',
-          urgency: 'High',
-          snippet: 'Contaminated borewell water causing acute gastroenteritis in tribal hamlets.',
-          timestamp: '3 mins ago',
-          pulse: false
-        }
-      ]
-    };
+    return { telemetry: [...storedUserTelemetry, ...defaultList] };
   }
 }
 

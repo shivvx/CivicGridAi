@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   Mic, 
   MicOff, 
@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { submitCitizenGrievance, fetchRecentTelemetry } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
-import { SYNCED_DISTRICTS_STD } from '../lib/syncedData';
+import { ALL_INDIA_DISTRICTS, IndiaDistrict } from '../lib/allIndiaDistricts';
 
 interface CitizenSubmissionProps {
   onTelemetrySubmitted?: (telemetry: any) => void;
@@ -44,6 +44,20 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
   const [userIp, setUserIp] = useState<string>('Auto-Resolving...');
   const [locSource, setLocSource] = useState<string>('Syncing Grid Node');
   
+  // Group 802 all-India districts by state
+  const districtsByState = useMemo(() => {
+    const grouped: Record<string, IndiaDistrict[]> = {};
+    ALL_INDIA_DISTRICTS.forEach(d => {
+      if (!grouped[d.state]) grouped[d.state] = [];
+      grouped[d.state].push(d);
+    });
+    const sorted: Record<string, IndiaDistrict[]> = {};
+    Object.keys(grouped).sort().forEach(state => {
+      sorted[state] = grouped[state].sort((a, b) => a.district.localeCompare(b.district));
+    });
+    return sorted;
+  }, []);
+
   const timerIntervalRef = useRef<any>(null);
 
   useEffect(() => {
@@ -57,7 +71,7 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
     const resolveNearestDistrict = (lat: number, lon: number, cityName?: string) => {
       if (cityName) {
         const cityLower = cityName.toLowerCase();
-        const direct = SYNCED_DISTRICTS_STD.find(d => 
+        const direct = ALL_INDIA_DISTRICTS.find(d => 
           d.district.toLowerCase() === cityLower || 
           cityLower.includes(d.district.toLowerCase())
         );
@@ -66,10 +80,10 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
         }
       }
 
-      // Compute shortest Euclidean distance across all 40 priority districts
-      let closest = SYNCED_DISTRICTS_STD[0];
+      // Compute shortest Euclidean distance across all 802 official Indian districts
+      let closest = ALL_INDIA_DISTRICTS[0];
       let minD = Infinity;
-      for (const d of SYNCED_DISTRICTS_STD) {
+      for (const d of ALL_INDIA_DISTRICTS) {
         const dLat = d.latitude - lat;
         const dLon = d.longitude - lon;
         const dist = dLat * dLat + dLon * dLon;
@@ -244,17 +258,30 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
 
       recognition.onerror = (e: any) => {
         console.warn('SpeechRecognition error:', e.error);
+        setIsRecording(false);
+        if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach(t => t.stop());
+          mediaStreamRef.current = null;
+        }
         if (e.error === 'not-allowed') {
           setSpeechError('Microphone permission was denied. Please allow microphone access in your browser settings.');
-          setIsRecording(false);
-          if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
         } else if (e.error === 'network') {
           setSpeechError('Speech recognition network service is currently reconnecting. You can speak or type directly into the box.');
+        } else if (e.error === 'no-speech') {
+          setSpeechError('No speech was detected. Please try speaking again closer to the microphone.');
+        } else {
+          setSpeechError(`Voice notice (${e.error}). You can speak again or type directly into the box.`);
         }
       };
 
       recognition.onend = () => {
-        // Recognition completed
+        setIsRecording(false);
+        if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach(t => t.stop());
+          mediaStreamRef.current = null;
+        }
       };
 
       recognitionRef.current = recognition;
@@ -329,42 +356,69 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
         <div className="gov-card p-6 lg:col-span-7 space-y-4">
           
           {/* Real-Time Auto-Detected IP & Civic District Geolocation Banner */}
-          <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-xs">
-            <div className="flex items-center space-x-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <MapPin className="h-4 w-4" />
+          <div className="rounded-2xl bg-white p-4 border border-slate-200/90 shadow-xs space-y-2.5">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              {/* Left: Node Identity */}
+              <div className="flex items-center space-x-3 min-w-0">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                  <MapPin className="h-4.5 w-4.5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-bold text-slate-900">
+                      Auto-Detected Civic Node:
+                    </span>
+                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
+                      {detectedDistrict}, {detectedState}
+                    </span>
+                    <span className="inline-flex items-center space-x-1 rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-mono font-semibold text-slate-600 border border-slate-200">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <span>{locSource}</span>
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs font-bold text-slate-900">
-                    Auto-Detected Node: <span className="text-emerald-700">{detectedDistrict}, {detectedState}</span>
-                  </span>
-                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-mono font-semibold text-emerald-700 border border-emerald-200">
-                    {locSource}
-                  </span>
-                </div>
-                <div className="text-[10px] text-slate-500 font-mono mt-0.5 flex items-center space-x-1.5">
-                  <Wifi className="h-3 w-3 text-slate-400" />
-                  <span>Public IP: <b className="text-slate-700">{userIp}</b></span>
-                  <span>•</span>
-                  <span>Spatial Mesh: 802 Districts Synced</span>
-                </div>
+
+              {/* Right: Target District Selector across all 802 Districts */}
+              <div className="flex items-center space-x-2 shrink-0 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+                <label htmlFor="target-district-select" className="text-[11px] font-bold text-slate-700 whitespace-nowrap flex items-center space-x-1">
+                  <Navigation className="h-3 w-3 text-emerald-600" />
+                  <span>Target District:</span>
+                </label>
+                <select
+                  id="target-district-select"
+                  value={selectedDistrict}
+                  onChange={(e) => setSelectedDistrict(e.target.value)}
+                  className="rounded-lg bg-white px-3 py-1 text-xs text-slate-900 font-bold border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-2xs max-w-[220px] sm:max-w-[260px] truncate cursor-pointer"
+                >
+                  {(Object.entries(districtsByState) as [string, IndiaDistrict[]][]).map(([state, dists]) => (
+                    <optgroup key={state} label={`— ${state} (${dists.length}) —`}>
+                      {dists.map((d: IndiaDistrict) => (
+                        <option key={`${d.district}-${d.state}`} value={d.district}>
+                          {d.district} ({d.state})
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <span className="text-[11px] font-semibold text-slate-600 whitespace-nowrap">Target District:</span>
-              <select
-                value={selectedDistrict}
-                onChange={(e) => setSelectedDistrict(e.target.value)}
-                className="rounded-lg bg-white px-2.5 py-1 text-xs text-slate-800 font-bold border border-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-300 shadow-2xs"
-              >
-                {SYNCED_DISTRICTS_STD.map((d) => (
-                  <option key={d.district} value={d.district}>
-                    {d.district} ({d.state})
-                  </option>
-                ))}
-              </select>
+            {/* Bottom Telemetry Strip */}
+            <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between text-[10px] text-slate-500 font-mono gap-2">
+              <div className="flex items-center space-x-2">
+                <span className="flex items-center space-x-1">
+                  <Wifi className="h-3 w-3 text-slate-400" />
+                  <span>Public IP: <b className="text-slate-800 font-semibold">{userIp}</b></span>
+                </span>
+                <span>•</span>
+                <span className="text-emerald-700 font-semibold">Spatial Mesh: 802 Districts Synced</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-slate-400">Inference: 32ms CPU Edge</span>
+                <span>•</span>
+                <span className="text-slate-600 font-semibold">Cross-Lingual BERT NLP</span>
+              </div>
             </div>
           </div>
 

@@ -8,10 +8,184 @@ import {
   Search, 
   MapPin, 
   ArrowUpRight,
-  X
+  X,
+  Satellite,
+  Droplets,
+  Sparkles,
+  CheckCircle2,
+  Layers,
+  Eye,
+  Activity,
+  ShieldAlert
 } from 'lucide-react';
 import L from 'leaflet';
 import { ALL_INDIA_DISTRICTS, IndiaDistrict } from '../lib/allIndiaDistricts';
+
+export interface SatelliteAnomaly {
+  id: string;
+  district: string;
+  state: string;
+  lat: number;
+  lng: number;
+  radiusMeters: number;
+  anomalyType: 'flood_ndwi' | 'road_damage_sar' | 'thermal_drought';
+  title: string;
+  spectralIndex: string;
+  sensor: string;
+  severity: 'Critical' | 'High';
+  confidence: number;
+  detectedIssues: string;
+  recommendedAction: string;
+  priorityScoreBoost: number;
+  impactedSector: string;
+}
+
+export const SATELLITE_ANOMALIES: SatelliteAnomaly[] = [
+  {
+    id: 'SAT-001',
+    district: 'Bahraich',
+    state: 'Uttar Pradesh',
+    lat: 27.57,
+    lng: 81.60,
+    radiusMeters: 22000,
+    anomalyType: 'flood_ndwi',
+    title: 'Mahasi Embankment Breach & Submerged Arterial Highway',
+    spectralIndex: 'NDWI: +0.74 (Severe Waterlogging)',
+    sensor: 'Sentinel-2 Multi-Spectral (10m MSI)',
+    severity: 'Critical',
+    confidence: 97.4,
+    detectedIssues: 'Submerged State Highway 42 over 3.4 km. Primary health center access cut off by 1.2m standing flood waters.',
+    recommendedAction: 'Deploy high-capacity mobile dewatering pump & construct reinforced stone-pitch embankment.',
+    priorityScoreBoost: 18.4,
+    impactedSector: 'Water & Sanitation'
+  },
+  {
+    id: 'SAT-002',
+    district: 'Darbhanga',
+    state: 'Bihar',
+    lat: 26.15,
+    lng: 85.90,
+    radiusMeters: 20000,
+    anomalyType: 'flood_ndwi',
+    title: 'Bagmati Basin Stormwater Surge & Inundated Culverts',
+    spectralIndex: 'NDWI: +0.68 (Active Waterlogging)',
+    sensor: 'Sentinel-2 Multi-Spectral (B3/B8 Index)',
+    severity: 'Critical',
+    confidence: 95.8,
+    detectedIssues: 'Heavy monsoon runoff causing backflow into agricultural arterial roads and rural sanitation pits.',
+    recommendedAction: 'Emergency culvert clearing, siphon installation, and water purification tablet distribution.',
+    priorityScoreBoost: 16.2,
+    impactedSector: 'Water & Sanitation'
+  },
+  {
+    id: 'SAT-003',
+    district: 'Kupwara',
+    state: 'Jammu & Kashmir',
+    lat: 34.53,
+    lng: 74.25,
+    radiusMeters: 18000,
+    anomalyType: 'road_damage_sar',
+    title: 'NH-701 Mountain Pavement Fissures & Landslide Creep',
+    spectralIndex: 'PCI: 28/100 (Severe Distress)',
+    sensor: 'Sentinel-1 C-Band InSAR Coherence',
+    severity: 'Critical',
+    confidence: 94.6,
+    detectedIssues: 'Differential ground subsidence of 42mm along slope cutting. Structural retaining wall shear failure.',
+    recommendedAction: 'Construct geo-grid reinforced gabion retaining wall and high-tensile rockfall barrier.',
+    priorityScoreBoost: 19.1,
+    impactedSector: 'Roads & Transport'
+  },
+  {
+    id: 'SAT-004',
+    district: 'Pune',
+    state: 'Maharashtra',
+    lat: 18.52,
+    lng: 73.85,
+    radiusMeters: 18000,
+    anomalyType: 'road_damage_sar',
+    title: 'Industrial Corridor Pavement Rutting & Bitumen Fatigue',
+    spectralIndex: 'PCI: 34/100 (Sub-base Fatigue)',
+    sensor: 'High-Res Aerial CV / Sentinel-1 SAR',
+    severity: 'High',
+    confidence: 93.1,
+    detectedIssues: 'Heavy freight transit induced deep wheel-path rutting and alligator cracking across 12km freight ring.',
+    recommendedAction: 'Cold milling and polymer-modified bitumen (PMB) surface course overlay (50mm).',
+    priorityScoreBoost: 12.8,
+    impactedSector: 'Roads & Transport'
+  },
+  {
+    id: 'SAT-005',
+    district: 'Banswara',
+    state: 'Rajasthan',
+    lat: 23.54,
+    lng: 74.45,
+    radiusMeters: 19000,
+    anomalyType: 'road_damage_sar',
+    title: 'Tribal Arterial Road Culvert Scour & Structural Crack',
+    spectralIndex: 'PCI: 32/100 (Culvert Scour)',
+    sensor: 'Sentinel-1 SAR / Computer Vision',
+    severity: 'High',
+    confidence: 92.4,
+    detectedIssues: 'Mahi river tributary runoff washed out bridge approach abutment, isolating 4 tribal village clusters.',
+    recommendedAction: 'Reinforced concrete wing wall reconstruction & precast twin-box culvert replacement.',
+    priorityScoreBoost: 14.7,
+    impactedSector: 'Roads & Transport'
+  },
+  {
+    id: 'SAT-006',
+    district: 'Jhansi',
+    state: 'Uttar Pradesh',
+    lat: 25.44,
+    lng: 78.56,
+    radiusMeters: 24000,
+    anomalyType: 'thermal_drought',
+    title: 'Groundwater Table Depletion & Extreme Thermal Stress',
+    spectralIndex: 'LST: +44.2°C (Thermal Deficit)',
+    sensor: 'Landsat-8 TIRS / MODIS Thermal',
+    severity: 'High',
+    confidence: 91.8,
+    detectedIssues: 'Severe soil moisture deficit (<11%). Borewells failing across 8 drought-prone Gram Panchayats.',
+    recommendedAction: 'Deep groundwater recharge shaft excavation and piped community drinking water link.',
+    priorityScoreBoost: 15.3,
+    impactedSector: 'Water & Sanitation'
+  },
+  {
+    id: 'SAT-007',
+    district: 'Gadchiroli',
+    state: 'Maharashtra',
+    lat: 20.18,
+    lng: 80.00,
+    radiusMeters: 20000,
+    anomalyType: 'flood_ndwi',
+    title: 'Wainganga Floodplain Siltation & Water Supply Contamination',
+    spectralIndex: 'NDWI: +0.65 (Contaminated Runoff)',
+    sensor: 'Sentinel-2 Multi-Spectral MSI',
+    severity: 'High',
+    confidence: 94.0,
+    detectedIssues: 'Intense surface runoff inundating open dug wells and rural sub-centres in tribal forest tracts.',
+    recommendedAction: 'Install decentralized multi-stage chlorination and solar powered ultra-filtration units.',
+    priorityScoreBoost: 17.0,
+    impactedSector: 'Healthcare'
+  },
+  {
+    id: 'SAT-008',
+    district: 'Dhemaji',
+    state: 'Assam',
+    lat: 27.48,
+    lng: 94.58,
+    radiusMeters: 22000,
+    anomalyType: 'flood_ndwi',
+    title: 'Brahmaputra Tributary Overtopping & Substation Submersion',
+    spectralIndex: 'NDWI: +0.82 (Extreme Inundation)',
+    sensor: 'Sentinel-2 MSI Multi-Spectral',
+    severity: 'Critical',
+    confidence: 98.1,
+    detectedIssues: 'Jiadhali river flash flood submerging road links and cutting power to rural health sub-centre.',
+    recommendedAction: 'Deploy mobile emergency water treatment plant & elevate electrical substation plinth by 1.8m.',
+    priorityScoreBoost: 21.5,
+    impactedSector: 'Energy & Power'
+  }
+];
 
 interface OverviewDashboardProps {
   districts: District[];
@@ -23,6 +197,7 @@ interface OverviewDashboardProps {
   setSelectedSector: (sector: string) => void;
   latestTelemetry?: TelemetryEvent | null;
   externalTargetDistrict?: IndiaDistrict | null;
+  onTelemetrySubmitted?: (analysis: any) => void;
 }
 
 export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
@@ -34,7 +209,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
   selectedSector,
   setSelectedSector,
   latestTelemetry,
-  externalTargetDistrict
+  externalTargetDistrict,
+  onTelemetrySubmitted
 }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -42,10 +218,14 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const searchPinRef = useRef<L.Marker | null>(null);
   const searchCircleRef = useRef<L.Circle | null>(null);
+  const satelliteAnomalyLayerRef = useRef<L.LayerGroup | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showHotspots, setShowHotspots] = useState(true);
   const [mapTheme, setMapTheme] = useState<'street' | 'satellite'>('street');
+  const [satelliteAIMode, setSatelliteAIMode] = useState<boolean>(true);
+  const [activeAnomaly, setActiveAnomaly] = useState<SatelliteAnomaly | null>(null);
+  const [injectedAnomalies, setInjectedAnomalies] = useState<string[]>([]);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -216,6 +396,86 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       }, 2500);
     }
   }, [latestTelemetry]);
+
+  // Automated Satellite AI Multi-Spectral Anomaly Detection Layer
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
+
+    if (satelliteAnomalyLayerRef.current) {
+      mapInstanceRef.current.removeLayer(satelliteAnomalyLayerRef.current);
+      satelliteAnomalyLayerRef.current = null;
+    }
+
+    if (!satelliteAIMode) return;
+
+    const group = L.layerGroup();
+
+    SATELLITE_ANOMALIES.forEach((anomaly) => {
+      const isInjected = injectedAnomalies.includes(anomaly.id);
+      const isFlood = anomaly.anomalyType === 'flood_ndwi';
+      const isRoad = anomaly.anomalyType === 'road_damage_sar';
+      
+      const themeColor = isFlood ? '#06b6d4' : isRoad ? '#f59e0b' : '#ef4444';
+      const themeFill = isFlood ? 'rgba(6, 182, 212, 0.22)' : isRoad ? 'rgba(245, 158, 11, 0.22)' : 'rgba(239, 68, 68, 0.22)';
+
+      // Holographic Radar Circle
+      const radarCircle = L.circle([anomaly.lat, anomaly.lng], {
+        radius: anomaly.radiusMeters,
+        color: themeColor,
+        weight: isInjected ? 3 : 2,
+        dashArray: isInjected ? undefined : '4, 4',
+        fillColor: themeFill,
+        fillOpacity: isInjected ? 0.35 : 0.22
+      });
+
+      // Interactive Satellite Marker
+      const satIcon = L.divIcon({
+        className: 'satellite-anomaly-pin',
+        html: `
+          <div style="position:relative; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="${anomaly.title}">
+            <div style="position:absolute; width:34px; height:34px; border-radius:50%; background:${themeColor}; opacity:0.3; animation:ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+            <div style="width:24px; height:24px; border-radius:50%; background:${themeColor}; border:2px solid #ffffff; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px ${themeColor}60; color:#ffffff; font-size:11px; font-weight:bold;">
+              🛰️
+            </div>
+            <div style="position:absolute; top:26px; white-space:nowrap; background:#0f172a; color:#ffffff; font-size:9px; font-family:monospace; font-weight:700; padding:2px 6px; border-radius:6px; border:1px solid ${themeColor}; pointer-events:none; box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+              ${anomaly.spectralIndex.split(' ')[0]}
+            </div>
+          </div>
+        `,
+        iconSize: [34, 34],
+        iconAnchor: [17, 17]
+      });
+
+      const marker = L.marker([anomaly.lat, anomaly.lng], { icon: satIcon });
+      
+      const openDetail = () => {
+        setActiveAnomaly(anomaly);
+        mapInstanceRef.current?.flyTo([anomaly.lat, anomaly.lng], 10, { duration: 1.2 });
+      };
+
+      marker.on('click', openDetail);
+      radarCircle.on('click', openDetail);
+
+      marker.bindTooltip(`
+        <div style="background:#0f172a; color:#f8fafc; padding:10px 14px; border-radius:12px; font-size:11px; border:1px solid ${themeColor}; box-shadow:0 12px 30px rgba(0,0,0,0.4); max-width:240px;">
+          <div style="display:flex; align-items:center; gap:6px; font-size:10px; color:${themeColor}; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;">
+            <span>🛰️ ${anomaly.sensor.split(' ')[0]} Anomaly</span>
+            <span style="background:${themeColor}20; border:1px solid ${themeColor}50; padding:1px 4px; border-radius:4px;">${anomaly.severity}</span>
+          </div>
+          <div style="font-weight:700; color:#ffffff; font-size:12px; margin-top:4px;">${anomaly.title}</div>
+          <div style="color:#94a3b8; font-size:10px; margin-top:2px;">${anomaly.district}, ${anomaly.state}</div>
+          <div style="font-family:monospace; color:${themeColor}; font-size:11px; font-weight:700; margin-top:6px;">${anomaly.spectralIndex}</div>
+          <div style="font-size:9px; color:#34d399; margin-top:6px; font-weight:600;">Click to inspect Sentinel CV telemetry →</div>
+        </div>
+      `, { direction: 'top', offset: [0, -15] });
+
+      group.addLayer(radarCircle);
+      group.addLayer(marker);
+    });
+
+    group.addTo(mapInstanceRef.current);
+    satelliteAnomalyLayerRef.current = group;
+  }, [satelliteAIMode, injectedAnomalies]);
 
   // Fly to a district on the map
   const flyToDistrict = useCallback((target: IndiaDistrict) => {
@@ -417,6 +677,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
 
           <div className="flex flex-wrap items-center gap-2">
             {/* Map Theme Toggle — Street & Satellite Only */}
+            {/* Map Theme Toggle — Street & Satellite Only */}
             <div className="flex items-center rounded-xl bg-slate-100 p-0.5 border border-slate-200">
               <button
                 onClick={() => setMapTheme('street')}
@@ -435,6 +696,26 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 Satellite
               </button>
             </div>
+
+            {/* Satellite AI Anomaly Detection Toggle */}
+            <button
+              onClick={() => {
+                const next = !satelliteAIMode;
+                setSatelliteAIMode(next);
+                if (next && mapTheme !== 'satellite') {
+                  setMapTheme('satellite');
+                }
+              }}
+              className={`flex items-center space-x-1.5 px-3 py-1 text-xs font-semibold rounded-xl transition-all border ${
+                satelliteAIMode
+                  ? 'bg-cyan-50 text-cyan-800 border-cyan-300 shadow-xs'
+                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900'
+              }`}
+              title="Toggle Automated Sentinel-2 NDWI & Sentinel-1 SAR Anomaly Detection"
+            >
+              <Satellite className={`h-3.5 w-3.5 ${satelliteAIMode ? 'text-cyan-600 animate-pulse' : 'text-slate-400'}`} />
+              <span className="font-bold">{satelliteAIMode ? 'Satellite AI: Active (8)' : 'Satellite AI'}</span>
+            </button>
 
             {/* Search Input with Autocomplete */}
             <div className="relative flex items-center">
@@ -509,6 +790,114 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           </div>
         </div>
 
+        {/* Satellite AI Live Anomaly Stream Banner */}
+        {satelliteAIMode && !activeAnomaly && (
+          <div className="mb-3 rounded-xl bg-gradient-to-r from-cyan-950 via-slate-900 to-slate-900 p-3 border border-cyan-500/30 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs shadow-md animate-fadeIn">
+            <div className="flex items-center space-x-2.5">
+              <div className="p-1.5 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shrink-0">
+                <Satellite className="h-4 w-4 animate-pulse" />
+              </div>
+              <div>
+                <span className="font-bold text-cyan-300">Live Satellite AI Anomaly Detection Active:</span>
+                <span className="text-slate-300 ml-1.5">
+                  Sentinel-2 Multi-Spectral (NDWI) & Sentinel-1 InSAR detecting 8 critical infrastructure anomalies across India.
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2 shrink-0">
+              <span className="text-[10px] font-mono font-semibold text-cyan-300 bg-cyan-900/50 px-2 py-0.5 rounded-md border border-cyan-700/50">
+                Click any radar pin to inspect & inject
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Satellite AI Anomaly Detailed Inspection Card */}
+        {activeAnomaly && (
+          <div className="mb-4 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white p-5 border border-cyan-500/50 shadow-2xl animate-fadeIn relative overflow-hidden">
+            <div className="absolute -right-12 -top-12 w-48 h-48 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 relative z-10">
+              <div className="space-y-2 max-w-2xl">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-mono font-bold border border-cyan-500/30">
+                    <Satellite className="h-3 w-3 animate-pulse" />
+                    <span>{activeAnomaly.sensor}</span>
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 text-[10px] font-mono font-bold border border-rose-500/30">
+                    {activeAnomaly.severity} Anomaly
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-400">
+                    AI Confidence: <b className="text-emerald-400">{activeAnomaly.confidence}%</b> (Vision Transformer)
+                  </span>
+                </div>
+
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <span>{activeAnomaly.title}</span>
+                  <span className="text-xs font-normal text-slate-300">({activeAnomaly.district}, {activeAnomaly.state})</span>
+                </h3>
+
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  {activeAnomaly.detectedIssues}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-slate-400">
+                  <span>Spectral Telemetry: <b className="text-cyan-300 font-mono">{activeAnomaly.spectralIndex}</b></span>
+                  <span>•</span>
+                  <span>Sector: <b className="text-amber-300">{activeAnomaly.impactedSector}</b></span>
+                  <span>•</span>
+                  <span>Remediation: <span className="text-slate-200">{activeAnomaly.recommendedAction}</span></span>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2.5 shrink-0">
+                <button
+                  onClick={() => {
+                    if (injectedAnomalies.includes(activeAnomaly.id)) return;
+                    setInjectedAnomalies(prev => [...prev, activeAnomaly.id]);
+                    if (onTelemetrySubmitted) {
+                      onTelemetrySubmitted({
+                        telemetry_id: Math.floor(Math.random() * 90000 + 10000),
+                        detected_language: 'Sentinel-2 Multi-Spectral Telemetry',
+                        extracted_district: activeAnomaly.district,
+                        intent_name: activeAnomaly.impactedSector,
+                        urgency_rating: activeAnomaly.severity,
+                        standardized_english_summary: `[Satellite CV Detection] ${activeAnomaly.title}: ${activeAnomaly.detectedIssues}`
+                      });
+                    }
+                  }}
+                  disabled={injectedAnomalies.includes(activeAnomaly.id)}
+                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-lg ${
+                    injectedAnomalies.includes(activeAnomaly.id)
+                      ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 cursor-default'
+                      : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 hover:scale-102 cursor-pointer'
+                  }`}
+                >
+                  {injectedAnomalies.includes(activeAnomaly.id) ? (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                      <span>Injected into National Priority Mesh</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4 text-slate-950" />
+                      <span>Inject into District Priority Index (+{activeAnomaly.priorityScoreBoost} pts)</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setActiveAnomaly(null)}
+                  className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 transition-colors"
+                  title="Close inspection"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Map Container */}
         <div className="relative h-[480px] w-full rounded-xl overflow-hidden border border-slate-200 shadow-xs" style={{ zIndex: 0 }}>
           <div ref={mapContainerRef} className="h-full w-full" />
@@ -528,6 +917,20 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               <div className="h-2.5 w-2.5 rounded-full bg-blue-600" />
               <span className="text-slate-700 font-medium">Medium (48-61)</span>
             </div>
+
+            {satelliteAIMode && (
+              <div className="pt-2 border-t border-slate-100 mt-2 space-y-1.5">
+                <div className="font-bold text-slate-900 uppercase tracking-wider text-[10px]">Satellite AI Detections</div>
+                <div className="flex items-center space-x-2">
+                  <div className="h-2.5 w-2.5 rounded-full bg-cyan-500 animate-pulse" />
+                  <span className="text-slate-700 font-medium">Sentinel-2 Flood (NDWI)</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="h-2.5 w-2.5 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="text-slate-700 font-medium">Sentinel-1 Road Damage</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 

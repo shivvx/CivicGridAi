@@ -112,6 +112,7 @@ export const App: React.FC = () => {
             setSelectedSector={setSelectedSector}
             latestTelemetry={latestTelemetry}
             externalTargetDistrict={searchedDistrict}
+            onTelemetrySubmitted={handleTelemetrySubmitted}
           />
         )}
 
