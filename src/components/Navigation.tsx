@@ -151,22 +151,22 @@ export const Navigation: React.FC<NavigationProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200/90 bg-white/95 backdrop-blur-md shadow-xs">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-200/90 bg-white/95 backdrop-blur-md shadow-xs">
       
       {/* Top Tier: Identity, Global Search, System Telemetry & Role Access */}
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 border-b border-slate-100">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-3 sm:px-6 border-b border-slate-100 gap-2">
         
         {/* Left: Brand & System Indicator */}
-        <div className="flex items-center space-x-3 shrink-0">
+        <div className="flex items-center space-x-2.5 sm:space-x-3 shrink-0">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white shadow-xs shrink-0">
             <Radio className="h-4 w-4 text-emerald-400 animate-pulse" />
           </div>
-          <div className="flex items-center space-x-2.5">
+          <div className="flex items-center space-x-2">
             <span className="font-display text-base font-bold tracking-tight text-slate-900 flex items-center">
               <span>Civic<span className="text-emerald-600">Grid</span></span>
               <span className="ml-1.5 rounded-md bg-slate-100 border border-slate-200 px-1.5 py-0.2 text-[10px] font-mono font-bold text-slate-700 cursor-default select-none">AI</span>
             </span>
-            <div className="flex items-center space-x-1 text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80 cursor-default select-none">
+            <div className="hidden xl:flex items-center space-x-1 text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80 cursor-default select-none shrink-0">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               <span>802 DISTS LIVE</span>
             </div>
@@ -174,20 +174,20 @@ export const Navigation: React.FC<NavigationProps> = ({
         </div>
 
         {/* Center: Global Intelligence Search Field with Autocomplete Dropdown */}
-        <div ref={searchContainerRef} className="relative hidden md:flex flex-1 max-w-md mx-6">
+        <div ref={searchContainerRef} className="relative flex-1 max-w-lg min-w-0 mx-1 sm:mx-4">
           <div className="relative w-full flex items-center">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="Search all 802 districts, sectors, or modules..."
+              placeholder="Search 802 districts, sectors, or modules..."
               value={headerSearch}
               onChange={(e) => {
                 setHeaderSearch(e.target.value);
                 setIsSearchOpen(true);
               }}
               onFocus={() => setIsSearchOpen(true)}
-              className="w-full rounded-xl bg-slate-50 border border-slate-200 pl-9 pr-14 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-300 transition-all shadow-2xs"
+              className="w-full rounded-xl bg-slate-100/90 hover:bg-slate-100 focus:bg-white border border-slate-200 focus:border-emerald-500 pl-10 pr-14 py-2 text-xs font-medium text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all shadow-2xs"
             />
             <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center space-x-1">
               {headerSearch ? (
@@ -196,22 +196,76 @@ export const Navigation: React.FC<NavigationProps> = ({
                     setHeaderSearch('');
                     setIsSearchOpen(false);
                   }}
-                  className="p-0.5 text-slate-400 hover:text-slate-600 rounded transition-colors"
+                  className="p-1 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-200/60 transition-colors"
+                  title="Clear search"
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               ) : (
-                <kbd className="text-[10px] font-mono bg-slate-200/70 text-slate-600 px-1.5 py-0.5 rounded border border-slate-300/60 cursor-default select-none">⌘K</kbd>
+                <kbd className="hidden sm:inline-flex items-center text-[10px] font-mono font-semibold bg-white text-slate-500 px-1.5 py-0.5 rounded border border-slate-200 shadow-2xs cursor-default select-none">
+                  ⌘K
+                </kbd>
               )}
             </div>
           </div>
 
           {/* Autocomplete Dropdown Panel */}
-          {isSearchOpen && query.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-2 rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden z-[9999] max-h-[420px] overflow-y-auto animate-fadeIn divide-y divide-slate-100">
+          {isSearchOpen && (
+            <div className="absolute top-full left-0 mt-2 w-[calc(100vw-1.5rem)] sm:w-[480px] md:w-[540px] max-w-[calc(100vw-1.5rem)] rounded-2xl bg-white border border-slate-200 shadow-2xl overflow-hidden z-[9999] max-h-[460px] overflow-y-auto animate-fadeIn divide-y divide-slate-100">
               
+              {/* Quick Jump Suggestions when query is empty */}
+              {!query && (
+                <div className="p-3">
+                  <div className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                    <span className="flex items-center space-x-1.5">
+                      <Sparkles className="h-3 w-3 text-emerald-600" />
+                      <span>Featured National Districts</span>
+                    </span>
+                    <span className="text-[9px] text-slate-400 font-sans font-medium">802 Total</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5 mt-1.5">
+                    {[
+                      { district: 'Bahraich', state: 'Uttar Pradesh', latitude: 27.57, longitude: 81.60 },
+                      { district: 'Varanasi', state: 'Uttar Pradesh', latitude: 25.32, longitude: 82.98 },
+                      { district: 'Pune', state: 'Maharashtra', latitude: 18.52, longitude: 73.85 },
+                      { district: 'Kupwara', state: 'Jammu & Kashmir', latitude: 34.53, longitude: 74.25 }
+                    ].map((dist) => (
+                      <button
+                        key={dist.district}
+                        onClick={() => handleDistrictClick(dist as IndiaDistrict)}
+                        className="flex items-center space-x-2 p-2 rounded-xl text-left bg-slate-50 hover:bg-emerald-50/70 border border-slate-100 group transition-all"
+                      >
+                        <MapPin className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-slate-900 group-hover:text-emerald-900 truncate">{dist.district}</div>
+                          <div className="text-[10px] text-slate-500 truncate">{dist.state}</div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Quick Modules */}
+                  <div className="mt-3 pt-2.5 border-t border-slate-100">
+                    <div className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                      Quick Jump Modules
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 mt-1.5">
+                      {navItems.slice(0, 4).map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => handleModuleClick(item.id)}
+                          className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Districts Section */}
-              {matchingDistricts.length > 0 && (
+              {query && matchingDistricts.length > 0 && (
                 <div className="p-2">
                   <div className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
                     <span>Indian Districts (802 Grid)</span>
@@ -246,7 +300,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               )}
 
               {/* Navigation Modules Section */}
-              {matchingModules.length > 0 && (
+              {query && matchingModules.length > 0 && (
                 <div className="p-2">
                   <div className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
                     Platform Modules
@@ -283,7 +337,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               )}
 
               {/* Deficit Sectors Section */}
-              {matchingSectors.length > 0 && (
+              {query && matchingSectors.length > 0 && (
                 <div className="p-2">
                   <div className="px-2.5 py-1 text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
                     Deficit Sectors
@@ -312,7 +366,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               )}
 
               {/* Empty State */}
-              {!hasResults && (
+              {query && !hasResults && (
                 <div className="p-6 text-center text-xs text-slate-500">
                   <Compass className="h-6 w-6 text-slate-300 mx-auto mb-2" />
                   <p className="font-semibold text-slate-700">No matching district or module</p>
@@ -327,10 +381,10 @@ export const Navigation: React.FC<NavigationProps> = ({
         </div>
 
         {/* Right: National Grid, ESG, CV, ML & Judge Demo Actions */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1.5 sm:space-x-2 shrink-0">
           
           {/* National Location Badge */}
-          <div className="hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium cursor-default select-none">
+          <div className="hidden 2xl:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium cursor-default select-none">
             <Globe2 className="h-3.5 w-3.5 text-slate-500" />
             <span>IN National Grid</span>
           </div>
@@ -338,7 +392,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           {/* Climate-Resilient ESG Mode Toggle */}
           <button
             onClick={() => setClimateMode(!climateMode)}
-            className={`flex items-center space-x-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all border ${
+            className={`hidden lg:flex items-center space-x-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold transition-all border ${
               climateMode
                 ? 'bg-emerald-50 text-emerald-700 border-emerald-300 shadow-xs'
                 : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900'
@@ -346,37 +400,38 @@ export const Navigation: React.FC<NavigationProps> = ({
             title="Toggle ESG & Climate Disaster Vulnerability Composite Index"
           >
             <Leaf className={`h-3.5 w-3.5 ${climateMode ? 'text-emerald-600' : 'text-slate-400'}`} />
-            <span className="hidden sm:inline">{climateMode ? 'ESG: ON' : 'ESG Mode'}</span>
+            <span>{climateMode ? 'ESG: ON' : 'ESG Mode'}</span>
           </button>
 
           {/* Satellite & Road CV Inspector */}
           <button
             onClick={openVisionModal}
-            className="hidden sm:flex items-center space-x-1.5 rounded-lg bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-all"
+            className="hidden xl:flex items-center space-x-1.5 rounded-lg bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-all"
             title="Sentinel-2 Satellite NDWI & Road Pavement CV Inspector"
           >
             <Satellite className="h-3.5 w-3.5 text-slate-500" />
-            <span className="hidden md:inline">Satellite CV</span>
+            <span>Satellite CV</span>
           </button>
 
           {/* ML Models & 2k Test Suite */}
           <button
             onClick={openModelLeaderboard}
-            className="hidden sm:flex items-center space-x-1.5 rounded-lg bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-all shadow-xs"
+            className="hidden xl:flex items-center space-x-1.5 rounded-lg bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-all shadow-xs"
             title="Inspect 15 Trained Machine Learning Architectures & 2k Test Set"
           >
             <Cpu className="h-3.5 w-3.5 text-slate-500" />
-            <span className="hidden md:inline">ML Benchmark</span>
+            <span>ML Benchmark</span>
           </button>
 
           {/* Executive Architecture Briefing Button */}
           <button
             onClick={openJudgeMode}
-            className="flex items-center space-x-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 text-xs font-bold shadow-xs transition-all hover:scale-[1.02]"
+            className="flex items-center space-x-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white px-2.5 sm:px-3 py-1.5 text-xs font-bold shadow-xs transition-all hover:scale-[1.02]"
             title="System Architecture & Executive Intelligence Briefing"
           >
             <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-            <span>Executive Briefing</span>
+            <span className="hidden sm:inline">Executive Briefing</span>
+            <span className="sm:hidden">Briefing</span>
           </button>
 
           {/* User Auth & Role Switcher */}

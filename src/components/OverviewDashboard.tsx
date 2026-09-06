@@ -7,7 +7,8 @@ import {
   Cpu, 
   Search, 
   MapPin, 
-  ArrowUpRight
+  ArrowUpRight,
+  X
 } from 'lucide-react';
 import L from 'leaflet';
 import { ALL_INDIA_DISTRICTS, IndiaDistrict } from '../lib/allIndiaDistricts';
@@ -437,7 +438,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
 
             {/* Search Input with Autocomplete */}
             <div className="relative flex items-center">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
               <input
                 ref={searchInputRef}
                 type="text"
@@ -448,23 +449,42 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   setShowSearchDropdown(true);
                 }}
                 onFocus={() => searchQuery.length >= 2 && setShowSearchDropdown(true)}
-                className="rounded-xl bg-slate-50 pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 border border-slate-200 focus:bg-white focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-300 w-44 sm:w-52 transition-all"
+                className="rounded-xl bg-white pl-9 pr-8 py-1.5 text-xs font-medium text-slate-900 placeholder-slate-400 border border-slate-300 hover:border-slate-400 focus:bg-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 w-56 sm:w-64 md:w-72 transition-all shadow-2xs"
               />
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setShowSearchDropdown(false);
+                  }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+                  title="Clear search"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
 
               {/* Search Dropdown */}
               {showSearchDropdown && searchResults.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg z-[500] max-h-64 overflow-y-auto">
+                <div className="absolute top-full left-0 mt-1.5 w-72 sm:w-80 bg-white border border-slate-200 rounded-2xl shadow-xl z-[1000] max-h-72 overflow-y-auto divide-y divide-slate-100 animate-fadeIn">
+                  <div className="px-3.5 py-2 bg-slate-50/90 border-b border-slate-100 flex items-center justify-between">
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-500">802 Districts Mesh</span>
+                    <span className="text-[10px] text-emerald-600 font-semibold">{searchResults.length} matches</span>
+                  </div>
                   {searchResults.map((item, idx) => (
                     <button
                       key={`${item.district}-${item.state}-${idx}`}
                       onClick={() => handleSearchSelect(item)}
-                      className="w-full px-3 py-2.5 text-left hover:bg-emerald-50 transition-colors flex items-center justify-between border-b border-slate-50 last:border-0"
+                      className="w-full px-3.5 py-2.5 text-left hover:bg-emerald-50/70 transition-colors flex items-center justify-between group"
                     >
                       <div>
-                        <div className="text-xs font-bold text-slate-900">{item.district}</div>
-                        <div className="text-[10px] text-slate-500">{item.state}</div>
+                        <div className="text-xs font-bold text-slate-900 group-hover:text-emerald-900">{item.district}</div>
+                        <div className="text-[10px] text-slate-500">{item.state} • {item.latitude.toFixed(2)}°N, {item.longitude.toFixed(2)}°E</div>
                       </div>
-                      <MapPin className="h-3 w-3 text-emerald-500 shrink-0" />
+                      <span className="text-[10px] font-semibold text-emerald-600 opacity-0 group-hover:opacity-100 flex items-center space-x-1 transition-opacity">
+                        <span>Fly To</span>
+                        <MapPin className="h-3 w-3 shrink-0" />
+                      </span>
                     </button>
                   ))}
                 </div>
