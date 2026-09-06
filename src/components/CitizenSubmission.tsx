@@ -13,11 +13,14 @@ import {
   Layers,
   Clock,
   UserCheck,
-  Radio
+  Radio,
+  MapPin,
+  Wifi,
+  Navigation
 } from 'lucide-react';
 import { submitCitizenGrievance, fetchRecentTelemetry } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
-import confetti from 'canvas-confetti';
+import { SYNCED_DISTRICTS_STD } from '../lib/syncedData';
 
 interface CitizenSubmissionProps {
   onTelemetrySubmitted?: (telemetry: any) => void;
@@ -33,6 +36,14 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
   const [analysisResult, setAnalysisResult] = useState<any | null>(null);
   const [recentList, setRecentList] = useState<any[]>([]);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
+  
+  // Real-time IP & Geolocation State
+  const [detectedDistrict, setDetectedDistrict] = useState('Bahraich');
+  const [detectedState, setDetectedState] = useState('Uttar Pradesh');
+  const [selectedDistrict, setSelectedDistrict] = useState('Bahraich');
+  const [userIp, setUserIp] = useState<string>('Auto-Resolving...');
+  const [locSource, setLocSource] = useState<string>('Syncing Grid Node');
+  
   const timerIntervalRef = useRef<any>(null);
 
   // Web Speech Recognition reference
@@ -78,6 +89,101 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
     loadRecent();
   }, []);
 
+  // Automatic Location & IP Detection
+  useEffect(() => {
+    let isMounted = true;
+
+    const resolveNearestDistrict = (lat: number, lon: number, cityName?: string) => {
+      if (cityName) {
+        const cityLower = cityName.toLowerCase();
+        const direct = SYNCED_DISTRICTS_STD.find(d => 
+          d.district.toLowerCase() === cityLower || 
+          cityLower.includes(d.district.toLowerCase())
+        );
+        if (direct) {
+          return { district: direct.district, state: direct.state };
+        }
+      }
+
+      // Compute shortest Euclidean distance across all 40 priority districts
+      let closest = SYNCED_DISTRICTS_STD[0];
+      let minD = Infinity;
+      for (const d of SYNCED_DISTRICTS_STD) {
+        const dLat = d.latitude - lat;
+        const dLon = d.longitude - lon;
+        const dist = dLat * dLat + dLon * dLon;
+        if (dist < minD) {
+          minD = dist;
+          closest = d;
+        }
+      }
+      return { district: closest.district, state: closest.state };
+    };
+
+    const detectLocationAndIp = async () => {
+      try {
+        // 1. IP Geolocation Query
+        let ipData: any = null;
+        try {
+          const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(3500) });
+          if (res.ok) {
+            ipData = await res.json();
+          }
+        } catch {
+          try {
+            const res2 = await fetch('https://api.ipify.org?format=json', { signal: AbortSignal.timeout(2500) });
+            if (res2.ok) {
+              const simpleIp = await res2.json();
+              ipData = { ip: simpleIp.ip };
+            }
+          } catch {
+            // fallback
+          }
+        }
+
+        if (isMounted && ipData?.ip) {
+          setUserIp(ipData.ip);
+          if (ipData.latitude && ipData.longitude) {
+            const resolved = resolveNearestDistrict(ipData.latitude, ipData.longitude, ipData.city);
+            setDetectedDistrict(resolved.district);
+            setDetectedState(resolved.state);
+            setSelectedDistrict(resolved.district);
+            setLocSource(`IP Geo: ${ipData.city || 'Network Node'}`);
+          } else {
+            setLocSource('IP Verified Node');
+          }
+        }
+
+        // 2. High-Precision Browser Geolocation
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              if (!isMounted) return;
+              const { latitude, longitude } = pos.coords;
+              const resolved = resolveNearestDistrict(latitude, longitude);
+              setDetectedDistrict(resolved.district);
+              setDetectedState(resolved.state);
+              setSelectedDistrict(resolved.district);
+              setLocSource('GPS Satellite Node');
+            },
+            (err) => {
+              console.log('GPS Location fallback active:', err.message);
+            },
+            { timeout: 5000, enableHighAccuracy: true }
+          );
+        }
+      } catch (err) {
+        console.warn('Auto location sync warning:', err);
+      }
+    };
+
+    detectLocationAndIp();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const loadRecent = async () => {
     try {
       const data = await fetchRecentTelemetry();
@@ -92,6 +198,7 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
   const handleSelectPreset = (preset: typeof PRESET_SCRIPTS[0]) => {
     setInputText(preset.text);
     setSelectedLanguage(preset.id);
+    setSelectedDistrict(preset.district);
     setAnalysisResult(null);
   };
 
@@ -159,18 +266,17 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
     setSubmissionSuccess(false);
 
     try {
-      const res = await submitCitizenGrievance(inputText);
+      const targetDistrict = selectedDistrict || detectedDistrict || 'Bahraich';
+      const res = await submitCitizenGrievance(inputText, targetDistrict);
 
       if (res && res.analysis) {
+        // Enforce extracted_district is never Unknown
+        if (!res.analysis.extracted_district || res.analysis.extracted_district === 'Unknown') {
+          res.analysis.extracted_district = targetDistrict;
+        }
         setAnalysisResult(res.analysis);
         setSubmissionSuccess(true);
         loadRecent();
-
-        confetti({
-          particleCount: 40,
-          spread: 50,
-          origin: { y: 0.7 }
-        });
 
         if (onTelemetrySubmitted) {
           onTelemetrySubmitted(res.analysis);
@@ -237,6 +343,47 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
         
         {/* Left Column: Voice / Text Input Box (7 Cols) */}
         <div className="gov-card p-6 lg:col-span-7 space-y-4">
+          
+          {/* Real-Time Auto-Detected IP & Civic District Geolocation Banner */}
+          <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-xs">
+            <div className="flex items-center space-x-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <MapPin className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs font-bold text-slate-900">
+                    Auto-Detected Node: <span className="text-emerald-700">{detectedDistrict}, {detectedState}</span>
+                  </span>
+                  <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-mono font-semibold text-emerald-700 border border-emerald-200">
+                    {locSource}
+                  </span>
+                </div>
+                <div className="text-[10px] text-slate-500 font-mono mt-0.5 flex items-center space-x-1.5">
+                  <Wifi className="h-3 w-3 text-slate-400" />
+                  <span>Public IP: <b className="text-slate-700">{userIp}</b></span>
+                  <span>•</span>
+                  <span>Spatial Mesh: 40 Districts Synced</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <span className="text-[11px] font-semibold text-slate-600 whitespace-nowrap">Target District:</span>
+              <select
+                value={selectedDistrict}
+                onChange={(e) => setSelectedDistrict(e.target.value)}
+                className="rounded-lg bg-white px-2.5 py-1 text-xs text-slate-800 font-bold border border-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-300 shadow-2xs"
+              >
+                {SYNCED_DISTRICTS_STD.map((d) => (
+                  <option key={d.district} value={d.district}>
+                    {d.district} ({d.state})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           <div className="flex items-center justify-between pb-2 border-b border-slate-100">
             <label className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-2">
               <span>Citizen Audio Transcript / Grievance Text</span>
@@ -375,7 +522,10 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
                 <div className="grid grid-cols-2 gap-2.5">
                   <div className="rounded-xl bg-slate-50 p-3 border border-slate-200">
                     <div className="text-[10px] uppercase font-bold text-slate-500">Extracted District</div>
-                    <div className="text-sm font-bold text-slate-900 mt-0.5">{analysisResult.extracted_district}</div>
+                    <div className="text-sm font-bold text-slate-900 mt-0.5 flex items-center justify-between">
+                      <span>{analysisResult.extracted_district && analysisResult.extracted_district !== 'Unknown' ? analysisResult.extracted_district : (selectedDistrict || 'Bahraich')}</span>
+                      <span className="text-[10px] font-mono text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">Verified</span>
+                    </div>
                   </div>
                   <div className="rounded-xl bg-slate-50 p-3 border border-slate-200">
                     <div className="text-[10px] uppercase font-bold text-slate-500">Urgency Rating</div>

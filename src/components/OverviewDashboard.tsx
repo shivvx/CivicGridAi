@@ -6,7 +6,6 @@ import {
   Users, 
   Cpu, 
   Filter, 
-  Layers, 
   Search, 
   ChevronRight, 
   TrendingUp, 
@@ -368,19 +367,6 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               <option value="Digital Infrastructure & DPI">Digital Infrastructure</option>
               <option value="Public Safety">Public Safety</option>
             </select>
-
-            {/* DBSCAN Hotspot Toggle */}
-            <button
-              onClick={() => setShowHotspots(!showHotspots)}
-              className={`flex items-center space-x-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold border transition-all ${
-                showHotspots
-                  ? 'bg-rose-50 text-rose-700 border-rose-200'
-                  : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
-              }`}
-            >
-              <Layers className="h-3.5 w-3.5" />
-              <span>DBSCAN Mesh</span>
-            </button>
           </div>
         </div>
 
@@ -402,10 +388,6 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             <div className="flex items-center space-x-2">
               <div className="h-2.5 w-2.5 rounded-full bg-blue-600" />
               <span className="text-slate-700 font-medium">Medium (48-61)</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="h-2.5 w-2.5 rounded-full border border-dashed border-rose-600" />
-              <span className="text-rose-700 font-medium">DBSCAN Spatial Cluster</span>
             </div>
           </div>
         </div>

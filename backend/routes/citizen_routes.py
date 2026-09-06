@@ -54,9 +54,9 @@ def submit_grievance():
     text = data.get("text", "")
     district_hint = data.get("district")
     
-    analysis = nlp_service.predict_intent(text)
-    if district_hint and analysis["extracted_district"] == "Unknown":
-        analysis["extracted_district"] = district_hint
+    analysis = nlp_service.predict_intent(text, district_hint=district_hint)
+    if not analysis.get("extracted_district") or analysis["extracted_district"] == "Unknown":
+        analysis["extracted_district"] = district_hint or "Bahraich"
 
     # Register into recent telemetry
     new_entry = {

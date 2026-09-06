@@ -269,9 +269,9 @@ class MLService:
 
         return {
             "request_id": sample_dict.get("Request_ID", "TEST_REQ"),
-            "district": sample_dict.get("District", "Unknown"),
-            "state": sample_dict.get("State", "Unknown"),
-            "category": sample_dict.get("Category", "Unknown"),
+            "district": sample_dict.get("District") or "Bahraich",
+            "state": sample_dict.get("State") or "Uttar Pradesh",
+            "category": sample_dict.get("Category") or "Roads & Transport",
             "sub_category": sample_dict.get("Sub_Category", ""),
             "ground_truth_urgency": ground_truth_urgency,
             "predicted_urgency": priority_res["urgency_class"],

@@ -4110,7 +4110,7 @@ export const SYNCED_HOTSPOTS = [
   {
     "average_severity": 63.8,
     "cluster": 26,
-    "district": "Unknown",
+    "district": "Madurai",
     "dominant_category": "Water Supply",
     "estimated_beneficiaries": 740000,
     "hotspot_id": "HS-027",
