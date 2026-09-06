@@ -87,10 +87,40 @@
   background: #94a3b8;
 }
 
-/* Executive Map Container */
+/* Executive Map Container — z-index capped to prevent overlay on modals */
 .leaflet-container {
   background: #f8fafc !important;
   font-family: inherit;
+  z-index: 1 !important;
+  position: relative;
+}
+
+/* Leaflet controls stay below modals */
+.leaflet-control-container {
+  z-index: 10 !important;
+}
+
+/* Prevent text cursor on non-editable display elements */
+[class*="badge"],
+[class*="label"],
+.cursor-default {
+  cursor: default !important;
+  user-select: none;
+}
+
+/* Ensure modals always stack above everything */
+.fixed.z-50 {
+  z-index: 9999 !important;
+}
+
+/* Fade-in animation for modals */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Audio Waveform Animation */

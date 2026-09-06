@@ -72,9 +72,9 @@ export const Navigation: React.FC<NavigationProps> = ({
           <div className="flex items-center space-x-2.5">
             <span className="font-display text-base font-bold tracking-tight text-slate-900 flex items-center">
               <span>Civic<span className="text-emerald-600">Grid</span></span>
-              <span className="ml-1.5 rounded-md bg-slate-100 border border-slate-200 px-1.5 py-0.2 text-[10px] font-mono font-bold text-slate-700">AI</span>
+              <span className="ml-1.5 rounded-md bg-slate-100 border border-slate-200 px-1.5 py-0.2 text-[10px] font-mono font-bold text-slate-700 cursor-default select-none">AI</span>
             </span>
-            <div className="flex items-center space-x-1 text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80">
+            <div className="flex items-center space-x-1 text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/80 cursor-default select-none">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               <span>V1.2 LIVE</span>
             </div>
@@ -102,7 +102,7 @@ export const Navigation: React.FC<NavigationProps> = ({
         <div className="flex items-center space-x-2">
           
           {/* National Location Badge */}
-          <div className="hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium">
+          <div className="hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-slate-600 text-xs font-medium cursor-default select-none">
             <Globe2 className="h-3.5 w-3.5 text-slate-500" />
             <span>IN National Grid</span>
           </div>
@@ -171,7 +171,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                     {user?.displayName ? user.displayName.split(' ')[0] : 'Officer'}
                   </span>
                   <span className="text-[9px] text-slate-500 font-mono leading-tight">
-                    {user?.role === 'District Planning Officer' ? 'DM Bahraich' : user?.role === 'State Auditor' ? 'Auditor' : user?.role || 'Citizen'}
+                    {user?.role || 'Verified'}
                   </span>
                 </div>
               </button>

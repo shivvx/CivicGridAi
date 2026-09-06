@@ -202,9 +202,16 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
     setAnalysisResult(null);
   };
 
-  // Toggle Live Speech Recognition
+  // State for speech error message (replaces alert())
+  const [speechError, setSpeechError] = useState<string | null>(null);
+  const shouldRestartRef = useRef(false);
+
+  // Toggle Live Speech Recognition — Cross-Device Compatible
   const toggleSpeech = () => {
+    setSpeechError(null);
+
     if (isRecording) {
+      shouldRestartRef.current = false;
       recognitionRef.current?.stop();
       setIsRecording(false);
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
@@ -213,49 +220,100 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
 
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert('Web Speech API is not supported in this browser. Please use Chrome, Edge, or Safari.');
+      setSpeechError('Voice input is not supported in this browser. Please use Chrome, Edge, or Safari on desktop/mobile.');
       return;
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
 
-    if (selectedLanguage === 'Hindi') recognition.lang = 'hi-IN';
-    else if (selectedLanguage === 'Marathi') recognition.lang = 'mr-IN';
-    else if (selectedLanguage === 'Bengali') recognition.lang = 'bn-IN';
-    else if (selectedLanguage === 'Portuguese') recognition.lang = 'pt-BR';
-    else recognition.lang = 'en-IN';
+      // Set language based on selection
+      const langMap: Record<string, string> = {
+        'Hindi': 'hi-IN',
+        'Marathi': 'mr-IN',
+        'Bengali': 'bn-IN',
+        'Portuguese': 'pt-BR',
+        'English': 'en-IN',
+        'Tamil': 'ta-IN',
+        'Telugu': 'te-IN',
+      };
+      recognition.lang = langMap[selectedLanguage] || 'en-IN';
 
-    recognition.onstart = () => {
-      setIsRecording(true);
-      setRecordingSeconds(0);
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-      timerIntervalRef.current = setInterval(() => {
-        setRecordingSeconds(prev => prev + 1);
-      }, 1000);
-    };
+      recognition.onstart = () => {
+        setIsRecording(true);
+        setSpeechError(null);
+        setRecordingSeconds(0);
+        shouldRestartRef.current = true;
+        if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = setInterval(() => {
+          setRecordingSeconds(prev => prev + 1);
+        }, 1000);
+      };
 
-    recognition.onresult = (event: any) => {
-      const transcript = Array.from(event.results)
-        .map((result: any) => result[0].transcript)
-        .join(' ');
-      setInputText(transcript);
-    };
+      // Properly handle interim + final results to avoid duplication
+      recognition.onresult = (event: any) => {
+        let finalTranscript = '';
+        let interimTranscript = '';
 
-    recognition.onerror = (e: any) => {
-      console.warn('Speech recognition event:', e);
-      setIsRecording(false);
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    };
+        for (let i = 0; i < event.results.length; i++) {
+          const result = event.results[i];
+          if (result.isFinal) {
+            finalTranscript += result[0].transcript + ' ';
+          } else {
+            interimTranscript += result[0].transcript;
+          }
+        }
 
-    recognition.onend = () => {
-      setIsRecording(false);
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
-    };
+        setInputText((finalTranscript + interimTranscript).trim());
+      };
 
-    recognitionRef.current = recognition;
-    recognition.start();
+      recognition.onerror = (e: any) => {
+        console.warn('Speech recognition error:', e.error);
+        
+        const errorMessages: Record<string, string> = {
+          'not-allowed': 'Microphone access denied. Please allow microphone permissions in your browser settings.',
+          'no-speech': 'No speech detected. Please speak clearly into your microphone.',
+          'network': 'Network error. Voice recognition requires an internet connection.',
+          'audio-capture': 'No microphone found. Please connect a microphone and try again.',
+          'aborted': 'Voice input was cancelled.',
+          'service-not-allowed': 'Speech service not available. Please try Chrome or Edge browser.',
+        };
+
+        const msg = errorMessages[e.error] || `Voice input error: ${e.error}. Please try again.`;
+        
+        // Don't show error for 'aborted' when user manually stopped
+        if (e.error !== 'aborted') {
+          setSpeechError(msg);
+        }
+        
+        shouldRestartRef.current = false;
+        setIsRecording(false);
+        if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      };
+
+      // Auto-restart on unexpected end (some browsers auto-stop after silence)
+      recognition.onend = () => {
+        if (shouldRestartRef.current && isRecording) {
+          try {
+            recognition.start();
+            return;
+          } catch {
+            // Can't restart, fall through
+          }
+        }
+        shouldRestartRef.current = false;
+        setIsRecording(false);
+        if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      setSpeechError('Failed to initialize voice input. Please try Chrome or Edge browser.');
+    }
   };
 
   // Submit & Analyze via BERT NLP backend
@@ -481,6 +539,22 @@ export const CitizenSubmission: React.FC<CitizenSubmissionProps> = ({ onTelemetr
               )}
             </button>
           </div>
+
+          {/* Voice Input Error Message (styled notification) */}
+          {speechError && (
+            <div className="rounded-xl bg-amber-50 p-3 border border-amber-200 text-xs text-amber-800 flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
+                <span>{speechError}</span>
+              </div>
+              <button 
+                onClick={() => setSpeechError(null)} 
+                className="text-amber-600 hover:text-amber-800 text-xs font-bold ml-2 shrink-0"
+              >
+                ✕
+              </button>
+            </div>
+          )}
 
           {/* Feature 2 Callout: Offline WhatsApp & SMS */}
           <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200 text-xs flex items-center justify-between text-slate-700">

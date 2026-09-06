@@ -5,15 +5,12 @@ import {
   Mail, 
   Key, 
   ShieldCheck, 
-  UserCheck, 
-  Building2, 
   User, 
-  Sparkles,
   ArrowRight,
   LogOut,
   Flame
 } from 'lucide-react';
-import { useAuth, DEMO_PERSONAS, UserRole } from '../context/AuthContext';
+import { useAuth, UserRole } from '../context/AuthContext';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -28,7 +25,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     signInWithGoogle, 
     signInWithEmail, 
     signUpWithEmail, 
-    switchDemoRole, 
     signOut 
   } = useAuth();
 
@@ -52,7 +48,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       }
       onClose();
     } catch (err: any) {
-      setErrorMsg(err?.message || 'Authentication error. Switched to fallback mode.');
+      setErrorMsg(err?.message || 'Authentication error. Please check your credentials.');
     }
   };
 
@@ -79,7 +75,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             <div>
               <div className="flex items-center space-x-2">
                 <h3 className="text-base font-bold text-slate-900">
-                  CivicGrid Identity & Role Access
+                  CivicGrid Identity & Access
                 </h3>
                 <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${
                   isRealFirebase 
@@ -90,7 +86,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 </span>
               </div>
               <p className="text-xs text-slate-500">
-                Authenticate via Firebase Auth or select a pre-verified Hackathon persona
+                Sign in with your Google account or create an account with email
               </p>
             </div>
           </div>
@@ -117,11 +113,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="text-sm font-bold text-slate-900">{user.displayName}</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                    {user.role}
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Verified
                   </span>
                 </div>
-                <div className="text-xs text-slate-500">{user.designation} • {user.district || user.email}</div>
+                <div className="text-xs text-slate-500">{user.email}</div>
               </div>
             </div>
 
@@ -136,85 +132,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         )}
 
         <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
-          
-          {/* 1-Click Judge & Demo Persona Switcher */}
-          <div>
-            <div className="flex items-center justify-between mb-2.5">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center space-x-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                <span>1-Click Hackathon Persona Switcher</span>
-              </span>
-              <span className="text-[10px] text-emerald-700 font-mono font-medium">Instant Role Switching</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              
-              {/* Persona 1: District Planner */}
-              <button
-                type="button"
-                onClick={() => { switchDemoRole('District Planning Officer'); onClose(); }}
-                className={`p-3 rounded-xl border text-left transition-all ${
-                  user?.role === 'District Planning Officer'
-                    ? 'bg-emerald-50/80 border-emerald-600 shadow-xs'
-                    : 'bg-slate-50/70 border-slate-200 text-slate-800 hover:bg-slate-100/70'
-                }`}
-              >
-                <div className="flex items-center space-x-2 mb-1">
-                  <Building2 className="h-4 w-4 text-emerald-700" />
-                  <span className="text-xs font-bold text-slate-900">District Planner</span>
-                </div>
-                <div className="text-[10px] text-slate-500 leading-tight">
-                  Dr. Vikram Malhotra, IAS (Bahraich DM)
-                </div>
-              </button>
-
-              {/* Persona 2: State Auditor */}
-              <button
-                type="button"
-                onClick={() => { switchDemoRole('State Auditor'); onClose(); }}
-                className={`p-3 rounded-xl border text-left transition-all ${
-                  user?.role === 'State Auditor'
-                    ? 'bg-emerald-50/80 border-emerald-600 shadow-xs'
-                    : 'bg-slate-50/70 border-slate-200 text-slate-800 hover:bg-slate-100/70'
-                }`}
-              >
-                <div className="flex items-center space-x-2 mb-1">
-                  <ShieldCheck className="h-4 w-4 text-emerald-700" />
-                  <span className="text-xs font-bold text-slate-900">State Auditor</span>
-                </div>
-                <div className="text-[10px] text-slate-500 leading-tight">
-                  Sunita Verma (NITI Aayog Lead)
-                </div>
-              </button>
-
-              {/* Persona 3: Citizen */}
-              <button
-                type="button"
-                onClick={() => { switchDemoRole('Citizen'); onClose(); }}
-                className={`p-3 rounded-xl border text-left transition-all ${
-                  user?.role === 'Citizen'
-                    ? 'bg-emerald-50/80 border-emerald-600 shadow-xs'
-                    : 'bg-slate-50/70 border-slate-200 text-slate-800 hover:bg-slate-100/70'
-                }`}
-              >
-                <div className="flex items-center space-x-2 mb-1">
-                  <User className="h-4 w-4 text-emerald-700" />
-                  <span className="text-xs font-bold text-slate-900">Resident Citizen</span>
-                </div>
-                <div className="text-[10px] text-slate-500 leading-tight">
-                  Rahul Sharma (Grievance Submissions)
-                </div>
-              </button>
-
-            </div>
-          </div>
-
-          <div className="relative flex items-center justify-center my-2">
-            <div className="border-t border-slate-200 w-full" />
-            <span className="bg-white px-3 text-[11px] text-slate-400 uppercase tracking-widest font-mono shrink-0">
-              Or Firebase Authentication
-            </span>
-          </div>
 
           {/* Google Sign In Button */}
           <button
@@ -232,8 +149,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             <span>Continue with Google</span>
           </button>
 
+          <div className="relative flex items-center justify-center my-2">
+            <div className="border-t border-slate-200 w-full" />
+            <span className="bg-white px-3 text-[11px] text-slate-400 uppercase tracking-widest font-mono shrink-0">
+              Or use Email
+            </span>
+          </div>
+
           {/* Email / Password Form */}
-          <form onSubmit={handleSubmit} className="space-y-3 pt-2">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div className="flex border-b border-slate-200 text-xs font-semibold">
               <button
                 type="button"
@@ -270,7 +194,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             )}
 
             <div>
-              <label className="block text-[11px] font-medium text-slate-600 mb-1">Government / Official Email</label>
+              <label className="block text-[11px] font-medium text-slate-600 mb-1">Email Address</label>
               <div className="relative">
                 <Mail className="h-4 w-4 text-slate-400 absolute left-3 top-2.5" />
                 <input
@@ -278,7 +202,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="planner@nic.in"
+                  placeholder="your@email.com"
                   className="w-full pl-9 pr-3 py-2 rounded-lg bg-white border border-slate-200 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-900 focus:ring-1 focus:ring-slate-900"
                 />
               </div>
