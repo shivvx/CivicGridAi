@@ -151,7 +151,7 @@ def assistant_chat():
     api_key = Config.GEMINI_API_KEY or os.getenv("GEMINI_API_KEY", "")
     if api_key:
         try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
             headers = {"Content-Type": "application/json"}
             system_prompt = f"""You are CivicGrid Policy Synthesizer, a senior infrastructure planner operating under ISO 37120 Smart City standards and UN SDGs 9, 11, 16.
 STRICT GROUNDING DIRECTIVE: You are strictly forbidden from inventing budget figures or districts not in the verified context:

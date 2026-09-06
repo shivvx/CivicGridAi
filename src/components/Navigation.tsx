@@ -13,7 +13,9 @@ import {
   Lock,
   Cpu,
   UserCheck,
-  User
+  User,
+  LogOut,
+  Flame
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -42,7 +44,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   tickerVisible,
   setTickerVisible
 }) => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navItems = [
     { id: 'overview', label: 'GIS Command Center', icon: Activity },
     { id: 'citizen', label: 'Citizen Ingestion', icon: Mic },
@@ -148,28 +150,49 @@ export const Navigation: React.FC<NavigationProps> = ({
             <span>Judge Mode</span>
           </button>
 
-          {/* User Auth & Role Switcher */}
-          <button
-            onClick={openAuthModal}
-            className="flex items-center space-x-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 px-2.5 py-1.5 border border-cyan-500/30 hover:border-cyan-400 transition-all text-xs shadow-sm"
-            title="Switch User Role or Sign In via Firebase"
-          >
-            <div className="h-6 w-6 rounded-full overflow-hidden border border-cyan-400 bg-slate-800 shrink-0 flex items-center justify-center">
-              {user?.photoURL ? (
-                <img src={user.photoURL} alt={user.displayName} className="h-full w-full object-cover" />
-              ) : (
-                <User className="h-3.5 w-3.5 text-cyan-300" />
-              )}
+          {/* User Auth & Role Switcher / Logout */}
+          {user ? (
+            <div className="flex items-center space-x-1.5 bg-slate-900/90 p-1 rounded-xl border border-cyan-500/30">
+              <button
+                onClick={openAuthModal}
+                className="flex items-center space-x-2 rounded-lg hover:bg-slate-800/80 px-2 py-1 transition-all text-xs"
+                title="Switch User Role or View Firebase Profile"
+              >
+                <div className="h-6 w-6 rounded-full overflow-hidden border border-cyan-400 bg-slate-800 shrink-0 flex items-center justify-center">
+                  {user?.photoURL ? (
+                    <img src={user.photoURL} alt={user.displayName} className="h-full w-full object-cover" />
+                  ) : (
+                    <User className="h-3.5 w-3.5 text-cyan-300" />
+                  )}
+                </div>
+                <div className="hidden sm:flex flex-col text-left">
+                  <span className="font-bold text-white text-[11px] leading-tight truncate max-w-[85px]">
+                    {user?.displayName ? user.displayName.split(' ')[0] : 'Officer'}
+                  </span>
+                  <span className="text-[9px] text-cyan-300 font-mono leading-tight">
+                    {user?.role === 'District Planning Officer' ? 'DM Bahraich' : user?.role === 'State Auditor' ? 'Auditor' : user?.role || 'Citizen'}
+                  </span>
+                </div>
+              </button>
+
+              <button
+                onClick={() => signOut()}
+                className="p-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900 text-rose-300 border border-rose-500/30 hover:border-rose-400 transition-all text-xs"
+                title="Sign Out of Firebase Session"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+              </button>
             </div>
-            <div className="hidden sm:flex flex-col text-left">
-              <span className="font-bold text-white text-[11px] leading-tight truncate max-w-[95px]">
-                {user?.displayName ? user.displayName.split(' ')[0] : 'Sign In'}
-              </span>
-              <span className="text-[9px] text-cyan-300 font-mono leading-tight">
-                {user?.role === 'District Planning Officer' ? 'DM Bahraich' : user?.role === 'State Auditor' ? 'Auditor' : user?.role || 'Guest'}
-              </span>
-            </div>
-          </button>
+          ) : (
+            <button
+              onClick={openAuthModal}
+              className="flex items-center space-x-1.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-600 to-rose-600 hover:from-amber-400 hover:to-rose-500 px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-orange-500/20 transition-all hover:scale-105"
+              title="Sign In with Firebase or Select a Persona"
+            >
+              <Flame className="h-3.5 w-3.5 text-amber-100" />
+              <span>Sign In</span>
+            </button>
+          )}
         </div>
       </div>
 
