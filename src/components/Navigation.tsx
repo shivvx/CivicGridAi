@@ -83,8 +83,8 @@ export const Navigation: React.FC<NavigationProps> = ({
 
         {/* Center: Global Intelligence Search Field */}
         <div className="hidden md:flex flex-1 max-w-md mx-6">
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
+          <div className="relative w-full flex items-center">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
             <input
               type="text"
               placeholder="Search districts, sectors, or metrics..."
@@ -92,8 +92,8 @@ export const Navigation: React.FC<NavigationProps> = ({
               onChange={(e) => setHeaderSearch(e.target.value)}
               className="w-full rounded-xl bg-slate-50 border border-slate-200 pl-9 pr-14 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:bg-white focus:border-slate-300 focus:outline-none focus:ring-1 focus:ring-slate-300 transition-all"
             />
-            <div className="absolute right-2.5 top-2">
-              <kbd className="text-[10px] font-mono bg-slate-200/70 text-slate-600 px-1.5 py-0.5 rounded border border-slate-300/60">⌘K</kbd>
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center">
+              <kbd className="text-[10px] font-mono bg-slate-200/70 text-slate-600 px-1.5 py-0.5 rounded border border-slate-300/60 cursor-default select-none">⌘K</kbd>
             </div>
           </div>
         </div>
